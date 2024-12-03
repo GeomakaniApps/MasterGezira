@@ -34,6 +34,9 @@ namespace MasterGezira
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
            
             builder.Services.AddOpenApi();
+            builder.Services.AddControllers();
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
 
             #region Dependency Injection
             builder.Services.AddApplicationExtensions();
@@ -80,15 +83,17 @@ namespace MasterGezira
             app.UseAuthorization();
             #endregion
 
-            //#region Routing
-            //app.MapControllerRoute(
-            //    name: "default",
-            //    pattern: "{controller=Home}/{action=Index}/{id?}");
-            //#endregion
-            //if (app.Environment.IsDevelopment())
-            //{
-            //    app.MapOpenApi();
-            //}
+           #region Routing
+            app.MapControllerRoute(
+                name: "default",
+                pattern: "{controller=Home}/{action=Index}/{id?}");
+            #endregion
+            if (app.Environment.IsDevelopment())
+            {
+                app.MapOpenApi();
+                app.UseSwagger();
+                app.UseSwaggerUI();
+            }
             app.MapControllers();
 
             app.Run();

@@ -8,4 +8,5 @@ public class OperationResult
     public bool Success { get; set; } = true;
     public string ErrorMessage { get; set; } = string.Empty;
     public string SuccessMessage { get; set; } = string.Empty;
+    public object? Data { get; set; }
 }

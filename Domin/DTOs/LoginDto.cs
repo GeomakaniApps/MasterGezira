@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using DataLayer.Helpers;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Domain.DTOs
+
+namespace Domain.DTOs;
+
+public class LoginDto : Entity
 {
-    public class LoginDto
-    {
-        [Required]
-        public string? Email { get; set; }
-        [Required]
-        public string? Password { get; set; }
-    }
+    [Required]
+    public string? Email { get; set; }
+    [Required]
+    public string? Password { get; set; }
 }

@@ -1,4 +1,5 @@
 ﻿using DataLayer.Models;
+using Domain.Common;
 using Domain.DTOs;
 using System;
 using System.Collections.Generic;
@@ -10,10 +11,10 @@ namespace Domain.Interfaces.AuthInterfaces
 {
     public interface IAccountService
     {
-        Task<IEnumerable<string>> GetRolesAsync();
-        Task<UserDto> LoginAsync(LoginDto loginDto);
-        Task<UserDto> ResgisterationAsync(RegistrationDto registrationDto, string role);
+        RoleResult GetRolesAsync();
+        Task<UserResult> LoginAsync(LoginDto loginDto);
+        Task<UserResult> ResgisterationAsync(RegistrationDto registrationDto, string role);
         Task<string> AuthenticateAsync(ApplicationUser user);
-        Task<bool> ChangePasswordAsync(string email, string currentPassword, string newPassword);
+        Task<OperationResult> ChangePasswordAsync(string email, string currentPassword, string newPassword);
     }
 }

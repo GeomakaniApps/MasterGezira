@@ -1,6 +1,8 @@
-﻿namespace Domain.DTOs;
+﻿using DataLayer.Helpers;
 
-public class EnumDto
+namespace Domain.DTOs;
+
+public class EnumDto : Entity
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;

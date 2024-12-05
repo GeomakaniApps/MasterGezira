@@ -6,12 +6,13 @@ using MasterGezira.API.Middlewares;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using DataLayer.Services;
 
 namespace MasterGezira
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -77,6 +78,7 @@ namespace MasterGezira
             #region Dependency Injection
             builder.Services.AddApplicationExtensions();
             #endregion
+
             builder.Services.AddCustomAuthentication(builder.Configuration);
 
 
@@ -109,7 +111,14 @@ namespace MasterGezira
 
            
             var app = builder.Build();
-            app.MapOpenApi();
+
+            #region Update Lookup
+            using (var scope = app.Services.CreateScope())
+            {
+                var seedLookupDate = scope.ServiceProvider.GetRequiredService<LookupUpdater>();
+                await seedLookupDate.SeedLookupDataAsync();
+            }
+            #endregion
 
             #region Global Error Handler
             app.UseExceptionMiddleware();
@@ -120,6 +129,7 @@ namespace MasterGezira
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
             #endregion
+
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();

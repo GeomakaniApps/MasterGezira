@@ -2,11 +2,13 @@
 using DataLayer.Models;
 using Domain.Common;
 using Domain.DTOs;
+using Domain.Helper;
 using Domain.Interfaces.AuthInterfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 using System.Net;
 
 namespace MasterGezira.API.Controllers
@@ -23,123 +25,142 @@ namespace MasterGezira.API.Controllers
             this._operationResult=new OperationResult();
         }
         [HttpGet]
-        [Authorize(Roles = RoleEnum.Admin)]
+        [Authorize(Roles = nameof(RoleEnum.Admin))]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public ActionResult<IEnumerable<object>> GetRoles()
+        public ActionResult GetRoles()
         {
-            _operationResult.Data = _accountService.GetRolesAsync();
-            _operationResult.SuccessMessage = "Roles returned successfully";
-            _operationResult.StatusCode=HttpStatusCode.OK;
-            return Ok(_operationResult);
+            var result=_accountService.GetRolesAsync();
+            if (!result.Success)
+                return StatusCode((int)result.StatusCode, result.ErrorMessage);
+
+            return StatusCode((int)result.StatusCode, result);
         }
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<UserDto>> Login(LoginDto LoginDto)
+        public async Task<ActionResult> Login(LoginDto LoginDto)
         {
-            _operationResult.Data =await _accountService.LoginAsync(LoginDto);
-            _operationResult.SuccessMessage = "Successfully Logged In";
-            _operationResult.StatusCode=HttpStatusCode.OK;
-            return Ok(_operationResult);
-        }
-       [HttpPost]
-       [Authorize(Roles = RoleEnum.Admin)]
-       [ProducesResponseType(StatusCodes.Status200OK)]
-       [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<UserDto>> RegisterAdmin([FromBody] RegistrationDto registrationDto, [FromQuery] string role)
-        {
-            _operationResult.Data = await _accountService.ResgisterationAsync(registrationDto, role);
-            _operationResult.SuccessMessage = $"Successfully {role} Created";
-            _operationResult.StatusCode = HttpStatusCode.Created;
-            return Ok(_operationResult);
+            var result =await _accountService.LoginAsync(LoginDto);
+            if (!result.Success)
+                return StatusCode((int)result.StatusCode, result.ErrorMessage);
+
+            return StatusCode((int)result.StatusCode, result);
         }
         [HttpPost]
-        [Authorize(Roles = RoleEnum.Admin + "," + RoleEnum.LockerAdmin)]
+        [Authorize(Roles = nameof(RoleEnum.Admin))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<UserDto>> LockerEmployeeRegisteration(RegistrationDto registrationDto)
+        public async Task<ActionResult> RegisterAdmin([FromBody] RegistrationDto registrationDto, string role)
         {
-            _operationResult.Data = await _accountService.ResgisterationAsync(registrationDto, RoleEnum.LockerEmployee);
-            _operationResult.SuccessMessage = "Successfully Locker Employee Created";
-            _operationResult.StatusCode = HttpStatusCode.Created;
-            return Ok(_operationResult);
+            var result = await _accountService.ResgisterationAsync(registrationDto, role);
+
+            if (!result.Success)
+                return StatusCode((int)result.StatusCode, result.ErrorMessage);
+
+            return StatusCode((int)result.StatusCode, result);
         }
         [HttpPost]
-        [Authorize(Roles = RoleEnum.Admin + "," + RoleEnum.ActivityAdmin)]
+        [Authorize(Roles = nameof(RoleEnum.Admin) + "," + nameof(RoleEnum.LockerAdmin))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult> LockerEmployeeRegisteration(RegistrationDto registrationDto)
+        {
+            var result = await _accountService.ResgisterationAsync(registrationDto, nameof(RoleEnum.LockerEmployee));
+
+            if (!result.Success)
+                return StatusCode((int)result.StatusCode, result.ErrorMessage);
+
+            return StatusCode((int)result.StatusCode, result);
+        }
+        [HttpPost]
+        [Authorize(Roles = nameof(RoleEnum.Admin) + "," + nameof(RoleEnum.ActivityAdmin))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<UserDto>> ActivityEmployeeRegisteration(RegistrationDto registrationDto)
         {
-            _operationResult.Data = await _accountService.ResgisterationAsync(registrationDto, RoleEnum.ActivityEmployee);
-            _operationResult.SuccessMessage = "Successfully Activity Employee Created";
-            _operationResult.StatusCode = HttpStatusCode.Created;
-            return Ok(_operationResult);
+            var result = await _accountService.ResgisterationAsync(registrationDto, nameof(RoleEnum.ActivityEmployee));
+
+            if (!result.Success)
+                return StatusCode((int)result.StatusCode, result.ErrorMessage);
+
+            return StatusCode((int)result.StatusCode, result);
         }
         [HttpPost]
-        [Authorize(Roles = RoleEnum.Admin + "," + RoleEnum.EventAdmin)]
+        [Authorize(Roles = nameof(RoleEnum.Admin) + "," + nameof(RoleEnum.EventAdmin))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<UserDto>> EventEmployeeRegisteration(RegistrationDto registrationDto)
         {
-            _operationResult.Data = await _accountService.ResgisterationAsync(registrationDto, RoleEnum.EventEmployee);
-            _operationResult.SuccessMessage = "Successfully Event Employee Created";
-            _operationResult.StatusCode = HttpStatusCode.Created;
-            return Ok(_operationResult);
+            var result = await _accountService.ResgisterationAsync(registrationDto, nameof(RoleEnum.EventEmployee));
+
+            if (!result.Success)
+                return StatusCode((int)result.StatusCode, result.ErrorMessage);
+
+            return StatusCode((int)result.StatusCode, result);
         }
         [HttpPost]
-        [Authorize(Roles = RoleEnum.Admin + "," + RoleEnum.ResortAdmin)]
+        [Authorize(Roles = nameof(RoleEnum.Admin) + "," + nameof(RoleEnum.ResortAdmin))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<UserDto>> ResortEmployeeRegisteration(RegistrationDto registrationDto)
         {
-            _operationResult.Data = await _accountService.ResgisterationAsync(registrationDto, RoleEnum.ResortEmployee);
-            _operationResult.SuccessMessage = "Successfully Resort Employee Created";
-            _operationResult.StatusCode = HttpStatusCode.Created;
-            return Ok(_operationResult);
+            var result = await _accountService.ResgisterationAsync(registrationDto, nameof(RoleEnum.ResortEmployee));
+
+            if (!result.Success)
+                return StatusCode((int)result.StatusCode, result.ErrorMessage);
+
+            return StatusCode((int)result.StatusCode, result);
         }
         [HttpPost]
-        [Authorize(Roles = RoleEnum.Admin + "," + RoleEnum.TripAdmin)]
+        [Authorize(Roles = nameof(RoleEnum.Admin) + "," + nameof(RoleEnum.TripAdmin))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<UserDto>> TripEmployeeRegisteration(RegistrationDto registrationDto)
         {
-            _operationResult.Data = await _accountService.ResgisterationAsync(registrationDto, RoleEnum.TripEmployee);
-            _operationResult.SuccessMessage = "Successfully Trip Employee Created";
-            _operationResult.StatusCode = HttpStatusCode.Created;
-            return Ok(_operationResult);
+            var result = await _accountService.ResgisterationAsync(registrationDto, nameof(RoleEnum.TripEmployee));
+
+            if (!result.Success)
+                return StatusCode((int)result.StatusCode, result.ErrorMessage);
+
+            return StatusCode((int)result.StatusCode, result);
         }
         [HttpPost]
-        [Authorize(Roles = RoleEnum.Admin + "," + RoleEnum.AreaAdmin)]
+        [Authorize(Roles = nameof(RoleEnum.Admin) + "," + nameof(RoleEnum.AreaAdmin))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<UserDto>> AreaEmployeeRegisteration(RegistrationDto registrationDto)
         {
-            _operationResult.Data = await _accountService.ResgisterationAsync(registrationDto, RoleEnum.AreaEmployee);
-            _operationResult.SuccessMessage = "Successfully Area Employee Created";
-            _operationResult.StatusCode = HttpStatusCode.Created;
-            return Ok(_operationResult);
+            var result = await _accountService.ResgisterationAsync(registrationDto, nameof(RoleEnum.AreaEmployee));
+
+            if (!result.Success)
+                return StatusCode((int)result.StatusCode, result.ErrorMessage);
+
+            return StatusCode((int)result.StatusCode, result);
         }
         [HttpPost]
-        [Authorize(Roles = RoleEnum.Admin + "," + RoleEnum.MembershipAdmin)]
+        [Authorize(Roles = nameof(RoleEnum.Admin) + "," + nameof(RoleEnum.MembershipAdmin))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<UserDto>> MembershipEmployeeRegisteration(RegistrationDto registrationDto)
         {
-            _operationResult.Data = await _accountService.ResgisterationAsync(registrationDto, RoleEnum.MembershipEmployee);
-            _operationResult.SuccessMessage = "Successfully Membership Employee Created";
-            _operationResult.StatusCode = HttpStatusCode.Created;
-            return Ok(_operationResult);
+            var result = await _accountService.ResgisterationAsync(registrationDto, nameof(RoleEnum.MembershipEmployee));
+
+            if (!result.Success)
+                return StatusCode((int)result.StatusCode, result.ErrorMessage);
+
+            return StatusCode((int)result.StatusCode, result);
         }
         [HttpPost]
-        [Authorize(Roles =RoleEnum.Admin)]
+        [Authorize(Roles = nameof(RoleEnum.Admin))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<OperationResult>> ChangePassword(string email, string currentPassword, string newPassword)
         {
-            await _accountService.ChangePasswordAsync(email, currentPassword, newPassword);
-            _operationResult.SuccessMessage = "Password changed successfully";
-            _operationResult.StatusCode = HttpStatusCode.OK;
-            return Ok(_operationResult);
+            var result=await _accountService.ChangePasswordAsync(email, currentPassword, newPassword);
+            if (!result.Success)
+                return StatusCode((int)result.StatusCode, result.ErrorMessage);
+
+            return StatusCode((int)result.StatusCode, result);
         }
     }
 }

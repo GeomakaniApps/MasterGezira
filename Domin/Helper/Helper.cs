@@ -7,7 +7,7 @@ using SysEnum = System.Enum;
 
 namespace Domain.Helper;
 
-public class Helper
+public static class Helper
 {
     public static IQueryable<EnumDto> GetEnumDisplayNames<T>() where T : Enum
     {

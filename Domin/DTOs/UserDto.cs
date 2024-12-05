@@ -1,16 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DataLayer.Helpers;
+using Domain.Common;
 
-namespace Domain.DTOs
+namespace Domain.DTOs;
+
+public class UserDto : Entity
 {
-    public class UserDto
-    {
-        public int Id { get; set; }
-        public string Email { get; set; }
-        public string Name { get; set; }
-        public string Token { get; set; }
-    }
+    public int Id { get; set; }
+    public string Email { get; set; }
+    public string Name { get; set; }
+    public string Token { get; set; }
+}
+
+public class UserResult : OperationResult
+{
+    public UserDto User { get; set; }
 }

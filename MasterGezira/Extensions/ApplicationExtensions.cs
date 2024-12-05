@@ -1,6 +1,7 @@
 ﻿using Core.Infrastruture.RepositoryPattern.Repository;
 using Core.Infrastruture.UnitOfWork;
 using DataLayer;
+using DataLayer.Services;
 using Domain.Common;
 using Domain.Interfaces.AuthInterfaces;
 using Domain.Services.AuthService;
@@ -19,6 +20,8 @@ public static class ApplicationExtensions
         services.AddAutoMapper(Assembly.GetExecutingAssembly());
         services.AddTransient<ExceptionMiddleware>();
         services.AddTransient<OperationResult>();
+        services.AddScoped<LookupUpdater>();
+
 
         services.AddScoped(typeof(IUnitOfWork), services =>
         {

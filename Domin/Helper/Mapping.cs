@@ -15,6 +15,8 @@ namespace Domain.Helper
         {
             CreateMap<Area, AreaDto>().ReverseMap();
             CreateMap<Area, GetAreaDto>().ReverseMap();
+            CreateMap<Job, JobDto>().ReverseMap();
+            CreateMap<Job, GetJobDto>().ReverseMap();
         }
     }
 }

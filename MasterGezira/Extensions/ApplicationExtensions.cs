@@ -19,6 +19,7 @@ public static class ApplicationExtensions
     {
         services.AddScoped<IAccountService, AccountService>();
         services.AddScoped<IAreaService, AreaService>();
+        services.AddScoped<IJobService, JobService>();
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddTransient(typeof(IUnitOfWork), typeof(UnitOfWork));
         //services.AddAutoMapper(Assembly.GetExecutingAssembly());

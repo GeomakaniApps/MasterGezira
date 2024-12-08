@@ -15,15 +15,8 @@ namespace MasterGezira.API.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class AccountController : ControllerBase
+    public class AccountController(IAccountService _accountService) : ControllerBase
     {
-        private readonly IAccountService _accountService;
-        protected OperationResult _operationResult;
-        public AccountController(IAccountService accountService)
-        {
-            _accountService = accountService;
-            this._operationResult=new OperationResult();
-        }
         [HttpGet]
         [Authorize(Roles = nameof(RoleEnum.Admin))]
         [ProducesResponseType(StatusCodes.Status200OK)]

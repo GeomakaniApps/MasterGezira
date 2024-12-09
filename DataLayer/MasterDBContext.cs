@@ -15,6 +15,7 @@ public class MasterDBContext : IdentityDbContext<ApplicationUser, ApplicationRol
     public DbSet<Area> Areas { get; set; }
     public DbSet<Job> Jobs { get; set; }
     public DbSet<City> Cities { get; set; }
+    public DbSet<Transformation> Transformations { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(MasterDBContext).Assembly);

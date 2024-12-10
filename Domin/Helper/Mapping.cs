@@ -21,6 +21,10 @@ namespace Domain.Helper
             CreateMap<Transformation, GetTransformationDto>().ReverseMap();
             CreateMap<City, CityDto>().ReverseMap();
             CreateMap<City, GetCityDto>().ReverseMap();
+            CreateMap<Section, SectionDto>().ReverseMap();
+            CreateMap<Section, GetSectionDto>().ReverseMap();
+            CreateMap<MemberType, MemberTypeDto>().ReverseMap();
+            CreateMap<MemberType, GetMemberTypeDto>().ReverseMap();
         }
     }
 }

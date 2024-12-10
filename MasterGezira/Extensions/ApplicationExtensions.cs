@@ -21,6 +21,8 @@ public static class ApplicationExtensions
         services.AddScoped<IAreaService, AreaService>();
         services.AddScoped<IJobService, JobService>();
         services.AddScoped<ICityService, CityService>();
+        services.AddScoped<ISectionService, SectionService>();
+        services.AddScoped<IMemberTypeService, MemberTypeService>();
         services.AddScoped<ITransformationService, TransformationService>();
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddTransient(typeof(IUnitOfWork), typeof(UnitOfWork));

@@ -3,6 +3,7 @@ using System;
 using DataLayer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataLayer.Migrations
 {
     [DbContext(typeof(MasterDBContext))]
-    partial class MasterDBContextModelSnapshot : ModelSnapshot
+    [Migration("20241209164843_addSection")]
+    partial class addSection
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -173,26 +176,6 @@ namespace DataLayer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Jobs");
-                });
-
-            modelBuilder.Entity("DataLayer.Models.MemberType", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int?>("Price")
-                        .HasColumnType("integer");
-
-                    b.HasKey("id");
-
-                    b.ToTable("memberTypes");
                 });
 
             modelBuilder.Entity("DataLayer.Models.Section", b =>

@@ -18,6 +18,7 @@ public class MasterDBContext : IdentityDbContext<ApplicationUser, ApplicationRol
     public DbSet<Section> section { get; set; }
     public DbSet<Transformation> Transformations { get; set; }
     public DbSet<MemberType> memberTypes { get; set; }
+    public DbSet<Nationality> Nationalities { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(MasterDBContext).Assembly);

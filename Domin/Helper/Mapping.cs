@@ -27,6 +27,8 @@ namespace Domain.Helper
             CreateMap<MemberType, GetMemberTypeDto>().ReverseMap();
             CreateMap<Nationality, NationalityDto>().ReverseMap();
             CreateMap<Nationality, GetNationalityDto>().ReverseMap();
+            CreateMap<Qualification, GetQualificationDto>().ReverseMap();
+            CreateMap<Qualification, QualificationDto>().ReverseMap();
         }
     }
 }

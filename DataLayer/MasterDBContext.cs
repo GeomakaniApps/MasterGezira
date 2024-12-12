@@ -20,6 +20,7 @@ public class MasterDBContext : IdentityDbContext<ApplicationUser, ApplicationRol
     public DbSet<MemberType> memberTypes { get; set; }
     public DbSet<Nationality> Nationalities { get; set; }
     public DbSet<Qualification> Qualifications { get; set; }
+    public DbSet<Reference> References { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(MasterDBContext).Assembly);

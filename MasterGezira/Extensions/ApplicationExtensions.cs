@@ -26,6 +26,7 @@ public static class ApplicationExtensions
         services.AddScoped<ITransformationService, TransformationService>();
         services.AddScoped<INationalityService, NationalityService>();
         services.AddScoped<IQualificationService, QualificationService>();
+        services.AddScoped<IReferenceService, ReferenceService>();
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddTransient(typeof(IUnitOfWork), typeof(UnitOfWork));
         //services.AddAutoMapper(Assembly.GetExecutingAssembly());

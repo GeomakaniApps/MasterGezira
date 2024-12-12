@@ -9,13 +9,16 @@ using System.Threading.Tasks;
 
 namespace Domain.DTOs
 {
-    public class NationalityDto : Entity
+    public class ReferenceDto : Entity
     {
         [Required]
         public string Name { get; set; } = string.Empty;
+        [Required]
+        public int Price { get; set; } 
     }
-    public class NationalityResult : OperationResult
+    public class ReferenceResult : OperationResult
     {
-        public NationalityDto Nationality { get; set; }
+        public ReferenceDto Reference { get; set; }
+
     }
 }

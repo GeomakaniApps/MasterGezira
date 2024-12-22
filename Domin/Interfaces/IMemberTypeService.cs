@@ -12,6 +12,7 @@ namespace Domain.Interfaces
         Task<MemberTypeResult> CreateAsync(MemberTypeDto memberTypeDto);
         Task<MemberTypeResult> UpdateAsync(int id , MemberTypeDto memberTypeDto);
         Task<MemberTypeResult> DeleteAsync(int id);
+        Task<GetMemberTypeResult> FindAllIsDeleteFalseAsync();
         Task<GetMemberTypeResult> GetAllAsync();
         Task<GetMemberTypeResult> GetAsync(int id);
     }

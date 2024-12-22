@@ -3,6 +3,7 @@ using System;
 using DataLayer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataLayer.Migrations
 {
     [DbContext(typeof(MasterDBContext))]
-    partial class MasterDBContextModelSnapshot : ModelSnapshot
+    [Migration("20241221151738_EditDataTypeInPhoneNumInMember")]
+    partial class EditDataTypeInPhoneNumInMember
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -251,9 +254,6 @@ namespace DataLayer.Migrations
                     b.Property<int?>("ImageId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("Imageid")
-                        .HasColumnType("integer");
-
                     b.Property<bool?>("IsDeleted")
                         .HasColumnType("boolean");
 
@@ -324,24 +324,6 @@ namespace DataLayer.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AreaId");
-
-                    b.HasIndex("CityId");
-
-                    b.HasIndex("Imageid");
-
-                    b.HasIndex("JobId");
-
-                    b.HasIndex("MemberTypeId");
-
-                    b.HasIndex("NationalityId");
-
-                    b.HasIndex("QualificationId");
-
-                    b.HasIndex("SectionId");
-
-                    b.HasIndex("TransformationId");
 
                     b.ToTable("Members");
                 });
@@ -567,63 +549,6 @@ namespace DataLayer.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
-                });
-
-            modelBuilder.Entity("DataLayer.Models.Member", b =>
-                {
-                    b.HasOne("DataLayer.Models.Area", "Area")
-                        .WithMany()
-                        .HasForeignKey("AreaId");
-
-                    b.HasOne("DataLayer.Models.City", "City")
-                        .WithMany()
-                        .HasForeignKey("CityId");
-
-                    b.HasOne("DataLayer.Models.ImegesMemberAndMemRef", "Image")
-                        .WithMany()
-                        .HasForeignKey("Imageid");
-
-                    b.HasOne("DataLayer.Models.Job", "Job")
-                        .WithMany()
-                        .HasForeignKey("JobId");
-
-                    b.HasOne("DataLayer.Models.MemberType", "MemberType")
-                        .WithMany()
-                        .HasForeignKey("MemberTypeId");
-
-                    b.HasOne("DataLayer.Models.Nationality", "Nationality")
-                        .WithMany()
-                        .HasForeignKey("NationalityId");
-
-                    b.HasOne("DataLayer.Models.Qualification", "Qualification")
-                        .WithMany()
-                        .HasForeignKey("QualificationId");
-
-                    b.HasOne("DataLayer.Models.Section", "Section")
-                        .WithMany()
-                        .HasForeignKey("SectionId");
-
-                    b.HasOne("DataLayer.Models.Transformation", "Transformation")
-                        .WithMany()
-                        .HasForeignKey("TransformationId");
-
-                    b.Navigation("Area");
-
-                    b.Navigation("City");
-
-                    b.Navigation("Image");
-
-                    b.Navigation("Job");
-
-                    b.Navigation("MemberType");
-
-                    b.Navigation("Nationality");
-
-                    b.Navigation("Qualification");
-
-                    b.Navigation("Section");
-
-                    b.Navigation("Transformation");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>

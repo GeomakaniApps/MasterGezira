@@ -10,6 +10,7 @@ namespace Domain.Interfaces
     public interface ISectionService
     {
         Task<GetSectionResult> GetAllAsync();
+        Task<GetSectionResult> FindAllIsDeleteFalseAsync();
         Task<GetSectionResult> GetAsync(int id);
         Task<SectionResult> CreateAsync(SectionDto sectionDto);
         Task<SectionResult> UpdateAsync(int id, SectionDto sectionDto);

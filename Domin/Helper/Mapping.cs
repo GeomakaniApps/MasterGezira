@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using DataLayer.Models;
 using Domain.DTOs;
+using Domain.Services;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,6 +33,21 @@ namespace Domain.Helper
             CreateMap<Qualification, QualificationDto>().ReverseMap();
             CreateMap<Reference, ReferenceDto>().ReverseMap();
             CreateMap<Reference, GetReferenceDto>().ReverseMap();
+            CreateMap<ImageMemberAndMembRefService, GetImagMamberAndMembRefDto>().ReverseMap();
+            CreateMap<MemberDto, Member>()
+            .ForMember(dest => dest.ImageId, opt => opt.Ignore())
+            .ForMember(dest => dest.Image, opt => opt.Ignore()); 
+            CreateMap<Member, GetMemberDto>()
+           .ForMember(dest => dest.Image, opt => opt.Ignore())
+               .ForMember(dest => dest.City, opt => opt.MapFrom(src => src.City))
+               .ForMember(dest => dest.Job, opt => opt.MapFrom(src => src.Job))
+                .ForMember(dest => dest.Nationality, opt => opt.MapFrom(src => src.Nationality))
+                .ForMember(dest => dest.MemberType, opt => opt.MapFrom(src => src.MemberType))
+                .ForMember(dest => dest.Section, opt => opt.MapFrom(src => src.Section))
+                .ForMember(dest => dest.Area, opt => opt.MapFrom(src => src.Area))
+                .ForMember(dest => dest.Qualification, opt => opt.MapFrom(src => src.Qualification))
+                .ForMember(dest => dest.Transformation, opt => opt.MapFrom(src => src.Transformation));
+
         }
     }
 }

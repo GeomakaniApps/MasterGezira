@@ -7,6 +7,7 @@ using Domain.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,13 +35,29 @@ namespace Domain.Services
             var Section = await _SectionRepository.GetByIdAsync(id);
             if (Section == null)
                 return Helper.Helper.CreateErrorResult<SectionResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("Section"));
-            await _SectionRepository.DeleteAsync(Section);
+            if (Section.IsDeleted == true)
+                return Helper.Helper.CreateErrorResult<SectionResult>(HttpStatusCode.BadRequest, "Section already Deleted");
+            Section.IsDeleted = true;
+            await _SectionRepository.UpdateAsync(Section);
             result.SuccessMessage = MessageEnum.Deleted(typeof(Section).Name);
             result.StatusCode = HttpStatusCode.OK;
             return result;
         }
 
-        public async Task<GetSectionResult> GetAllAsync()
+        public async Task<GetSectionResult> FindAllIsDeleteFalseAsync()
+        {
+            var result = new GetSectionResult();
+            var SectionCondition = (Expression<Func<Section, bool>>)(mt => mt.IsDeleted == false);
+            var Sections = await _SectionRepository.FindAllAsync(SectionCondition);
+            if (!Sections.Any())
+                return Helper.Helper.CreateErrorResult<GetSectionResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("Section"));
+            var SectionsDto = _mapper.Map<List<GetSectionDto>>(Sections);
+            result.Sections = SectionsDto;
+            result.SuccessMessage = MessageEnum.Getted(typeof(Section).Name);
+            result.StatusCode = HttpStatusCode.OK;
+            return result;
+        }
+          public async Task<GetSectionResult> GetAllAsync()
         {
             var result = new GetSectionResult();
             var Sections = await _SectionRepository.GetAllAsync();

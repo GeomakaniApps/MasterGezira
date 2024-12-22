@@ -35,8 +35,10 @@ namespace Domain.Services
             var memberType = await _memberTyperepository.GetByIdAsync(id);
             if (memberType == null)
                 return Helper.Helper.CreateErrorResult<MemberTypeResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("MemberType"));
-              
-             await _memberTyperepository.DeleteAsync(memberType);
+            if (memberType.IsDeleted == true)
+                return Helper.Helper.CreateErrorResult<MemberTypeResult>(HttpStatusCode.BadRequest,"Member Type already deleted");
+            memberType.IsDeleted = true;  
+             await _memberTyperepository.UpdateAsync(memberType);
              result.SuccessMessage = MessageEnum.Deleted(typeof(Transformation).Name);
             return result;
         }
@@ -53,7 +55,19 @@ namespace Domain.Services
             return result;
         }
 
-        public async Task<GetMemberTypeResult> GetAllAsync()
+        public async Task<GetMemberTypeResult> FindAllIsDeleteFalseAsync()
+        {
+            var result = new GetMemberTypeResult();
+            var memberTypeCondition = (Expression<Func<MemberType, bool>>)(mt => mt.IsDeleted == false);
+            var memberType = await _memberTyperepository.FindAllAsync(memberTypeCondition);
+            if (!memberType.Any())
+                return Helper.Helper.CreateErrorResult<GetMemberTypeResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundAny("MemberType"));
+            var memberTypeDto = _mapper.Map<List<GetMemberTypeDto>>(memberType);
+            result.MemberTypes = memberTypeDto;
+            result.SuccessMessage = MessageEnum.Getted(typeof(MemberType).Name);
+            return result;
+        }
+         public async Task<GetMemberTypeResult> GetAllAsync()
         {
             var result = new GetMemberTypeResult();
             var memberType = await _memberTyperepository.GetAllAsync();

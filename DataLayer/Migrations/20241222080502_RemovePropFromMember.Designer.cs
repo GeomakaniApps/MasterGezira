@@ -3,6 +3,7 @@ using System;
 using DataLayer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataLayer.Migrations
 {
     [DbContext(typeof(MasterDBContext))]
-    partial class MasterDBContextModelSnapshot : ModelSnapshot
+    [Migration("20241222080502_RemovePropFromMember")]
+    partial class RemovePropFromMember
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -221,65 +224,11 @@ namespace DataLayer.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Address")
-                        .HasColumnType("text");
-
-                    b.Property<int?>("AreaId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateOnly?>("BirthDate")
-                        .HasColumnType("date");
-
-                    b.Property<string>("BirthPlace")
-                        .HasColumnType("text");
-
-                    b.Property<int?>("CityId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("CreateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("CreateBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("DeleteAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("DeleteBy")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("ImageId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("Imageid")
-                        .HasColumnType("integer");
-
-                    b.Property<bool?>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("JobAddress")
-                        .HasColumnType("text");
-
-                    b.Property<int?>("JobId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("JobTelephone")
-                        .HasColumnType("integer");
-
-                    b.Property<DateOnly?>("JoinDate")
-                        .HasColumnType("date");
-
-                    b.Property<string>("MaritalStatus")
-                        .HasColumnType("text");
-
                     b.Property<int>("MemberCode")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("MemberCode"));
-
-                    b.Property<int?>("MemberTypeId")
-                        .HasColumnType("integer");
 
                     b.Property<string>("Name")
                         .HasColumnType("text");
@@ -287,61 +236,7 @@ namespace DataLayer.Migrations
                     b.Property<long?>("NationalId")
                         .HasColumnType("bigint");
 
-                    b.Property<int?>("NationalityId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("PhoneNumber")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("QualificationId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Religion")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Remark")
-                        .HasColumnType("text");
-
-                    b.Property<int?>("SectionId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Sex")
-                        .HasColumnType("text");
-
-                    b.Property<bool?>("Suspended")
-                        .HasColumnType("boolean");
-
-                    b.Property<int?>("TransformationId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("UpdateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("UpdateBy")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("AreaId");
-
-                    b.HasIndex("CityId");
-
-                    b.HasIndex("Imageid");
-
-                    b.HasIndex("JobId");
-
-                    b.HasIndex("MemberTypeId");
-
-                    b.HasIndex("NationalityId");
-
-                    b.HasIndex("QualificationId");
-
-                    b.HasIndex("SectionId");
-
-                    b.HasIndex("TransformationId");
 
                     b.ToTable("Members");
                 });
@@ -567,63 +462,6 @@ namespace DataLayer.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
-                });
-
-            modelBuilder.Entity("DataLayer.Models.Member", b =>
-                {
-                    b.HasOne("DataLayer.Models.Area", "Area")
-                        .WithMany()
-                        .HasForeignKey("AreaId");
-
-                    b.HasOne("DataLayer.Models.City", "City")
-                        .WithMany()
-                        .HasForeignKey("CityId");
-
-                    b.HasOne("DataLayer.Models.ImegesMemberAndMemRef", "Image")
-                        .WithMany()
-                        .HasForeignKey("Imageid");
-
-                    b.HasOne("DataLayer.Models.Job", "Job")
-                        .WithMany()
-                        .HasForeignKey("JobId");
-
-                    b.HasOne("DataLayer.Models.MemberType", "MemberType")
-                        .WithMany()
-                        .HasForeignKey("MemberTypeId");
-
-                    b.HasOne("DataLayer.Models.Nationality", "Nationality")
-                        .WithMany()
-                        .HasForeignKey("NationalityId");
-
-                    b.HasOne("DataLayer.Models.Qualification", "Qualification")
-                        .WithMany()
-                        .HasForeignKey("QualificationId");
-
-                    b.HasOne("DataLayer.Models.Section", "Section")
-                        .WithMany()
-                        .HasForeignKey("SectionId");
-
-                    b.HasOne("DataLayer.Models.Transformation", "Transformation")
-                        .WithMany()
-                        .HasForeignKey("TransformationId");
-
-                    b.Navigation("Area");
-
-                    b.Navigation("City");
-
-                    b.Navigation("Image");
-
-                    b.Navigation("Job");
-
-                    b.Navigation("MemberType");
-
-                    b.Navigation("Nationality");
-
-                    b.Navigation("Qualification");
-
-                    b.Navigation("Section");
-
-                    b.Navigation("Transformation");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>

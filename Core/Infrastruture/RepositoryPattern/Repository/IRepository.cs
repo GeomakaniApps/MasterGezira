@@ -77,5 +77,6 @@ public interface IRepository<T>
     Task AddRangeAsync(IEnumerable<T> entities);
     void UpdateRange(IEnumerable<T> entities);
     Task UpdateRangeAsync(IEnumerable<T> entities);
+    Task<T> FindLastAsync(string propertyName);
 
 }

@@ -35,6 +35,17 @@ namespace MasterGezira.API.Controllers
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult> FindIsDeletedAll()
+        {
+            var result = await _memberTypeService.FindAllIsDeleteFalseAsync();
+            if (!result.Success)
+                return StatusCode((int)result.StatusCode, result.ErrorMessage);
+
+            return StatusCode((int)result.StatusCode, result);
+        }
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult> Get(int id)
         {
             var result = await _memberTypeService.GetAsync(id);

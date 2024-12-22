@@ -8,14 +8,14 @@ namespace MasterGezira.API.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class SectionController(ISectionService _sectionService) : ControllerBase
+    public class MemberController(IMemberService _memberService): ControllerBase
     {
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult> Create(SectionDto sectionDto)
+        public async Task<ActionResult> Create(MemberDto  memberDto)
         {
-            var result = await _sectionService.CreateAsync(sectionDto);
+            var result = await _memberService.CreateAsync(memberDto);
             if (!result.Success)
                 return StatusCode((int)result.StatusCode, result.ErrorMessage);
 
@@ -26,18 +26,7 @@ namespace MasterGezira.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult> GetAll()
         {
-            var result = await _sectionService.GetAllAsync();
-            if (!result.Success)
-                return StatusCode((int)result.StatusCode, result.ErrorMessage);
-
-            return StatusCode((int)result.StatusCode, result);
-        }
-        [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult> FindIsDeltedAll()
-        {
-            var result = await _sectionService.FindAllIsDeleteFalseAsync();
+            var result = await _memberService.GetAllAsync();
             if (!result.Success)
                 return StatusCode((int)result.StatusCode, result.ErrorMessage);
 
@@ -48,7 +37,7 @@ namespace MasterGezira.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult> Get(int id)
         {
-            var result = await _sectionService.GetAsync(id);
+            var result = await _memberService.GetAsync(id);
             if (!result.Success)
                 return StatusCode((int)result.StatusCode, result.ErrorMessage);
 
@@ -57,9 +46,9 @@ namespace MasterGezira.API.Controllers
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult> Update(int id, SectionDto sectionDto)
+        public async Task<ActionResult> Update(int id, MemberDto memberDto)
         {
-            var result = await _sectionService.UpdateAsync(id, sectionDto);
+            var result = await _memberService.UpdateAsync(id, memberDto);
             if (!result.Success)
                 return StatusCode((int)result.StatusCode, result.ErrorMessage);
 
@@ -70,7 +59,7 @@ namespace MasterGezira.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult> Delete(int id)
         {
-            var result = await _sectionService.DeleteAsync(id);
+            var result = await _memberService.DeleteAsync(id);
             if (!result.Success)
                 return StatusCode((int)result.StatusCode, result.ErrorMessage);
 

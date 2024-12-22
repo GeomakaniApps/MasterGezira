@@ -284,5 +284,13 @@ public class Repository<T> : IRepository<T> where T : Entity
         _dbSet.UpdateRange(entities);
         await _dbContext.SaveChangesAsync();
     }
+    public async Task<T> FindLastAsync(string propertyName)
+    {
+        return await _dbContext.Set<T>()
+            .OrderByDescending(m => EF.Property<object>(m, propertyName))  // استخدم اسم الخاصية الديناميكي
+            .FirstOrDefaultAsync();
+    }
+
 #pragma warning restore CS8603 // Possible null reference return.
+
 }

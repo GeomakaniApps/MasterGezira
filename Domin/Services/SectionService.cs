@@ -14,15 +14,21 @@ using System.Threading.Tasks;
 
 namespace Domain.Services
 {
-    public class SectionService(IRepository<Section> _SectionRepository, IMapper _mapper) : ISectionService
+    public class SectionService(IRepository<Section> _SectionRepository, IMapper _mapper,IRepository<MemberType> _memberTypeRepository) : ISectionService
     {
         public async Task<SectionResult> CreateAsync(SectionDto SectionDto)
         {
             var result = new SectionResult();
             if (_SectionRepository.Find(n => n.Name.ToLower() == SectionDto.Name.ToLower()) != null)
                 return Helper.Helper.CreateErrorResult<SectionResult>(HttpStatusCode.BadRequest, ErrorEnum.Existed("Section"));
-            Section Section = _mapper.Map<Section>(SectionDto);
-            await _SectionRepository.AddAsync(Section);
+            var memberType = await _memberTypeRepository.GetByIdAsync(SectionDto.MemberTypeId);
+            if (memberType == null)
+                return Helper.Helper.CreateErrorResult<SectionResult>(HttpStatusCode.BadRequest, "Didn't find the member type you passed it");
+            SectionDto.Price = SectionDto.Price - ((SectionDto.Price * SectionDto.Discount) / 100);
+            Section section = _mapper.Map<Section>(SectionDto);
+            section.PriceWithoutTax = (section.Price * 100) / 114;
+            section.Tax = section.Price - section.PriceWithoutTax;
+            await _SectionRepository.AddAsync(section);
             result.Section = SectionDto;
             result.SuccessMessage = MessageEnum.Created(typeof(Section).Name);
             result.StatusCode = HttpStatusCode.Created;
@@ -60,7 +66,7 @@ namespace Domain.Services
           public async Task<GetSectionResult> GetAllAsync()
         {
             var result = new GetSectionResult();
-            var Sections = await _SectionRepository.GetAllAsync();
+            var Sections = await _SectionRepository.GetAllAsync(includeProperties:"MemberType");
             if (!Sections.Any())
                 return Helper.Helper.CreateErrorResult<GetSectionResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("Section"));
             var SectionsDto = _mapper.Map<List<GetSectionDto>>(Sections);
@@ -73,10 +79,10 @@ namespace Domain.Services
         public async Task<GetSectionResult> GetAsync(int id)
         {
             var result = new GetSectionResult();
-            var Section = await _SectionRepository.GetByIdAsync(id);
-            if (Section == null)
+            var section = await _SectionRepository.GetByIdAsync(id);
+            if (section == null)
                 return Helper.Helper.CreateErrorResult<GetSectionResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("Section"));
-            var SectionDto = _mapper.Map<GetSectionDto>(Section);
+            var SectionDto = _mapper.Map<GetSectionDto>(section);
             result.Section = SectionDto;
             result.SuccessMessage = MessageEnum.Getted(typeof(Section).Name);
             result.StatusCode = HttpStatusCode.OK;
@@ -86,14 +92,20 @@ namespace Domain.Services
         public async Task<SectionResult> UpdateAsync(int id, SectionDto SectionDto)
         {
             var result = new SectionResult();
-            var Section = await _SectionRepository.GetByIdAsync(id);
-            if (Section == null)
+            var section = await _SectionRepository.GetByIdAsync(id);
+            if (section == null)
                 return Helper.Helper.CreateErrorResult<SectionResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("Section"));
             var isDuplacateName = await _SectionRepository.FindAsync(n => n.Name.ToLower() == SectionDto.Name.ToLower() && n.Id != id);
             if (isDuplacateName != null)
                 return Helper.Helper.CreateErrorResult<SectionResult>(HttpStatusCode.Conflict, ErrorEnum.Existed("Section"));
-            _mapper.Map(SectionDto, Section);
-            await _SectionRepository.UpdateAsync(Section);
+            var memberType = await _memberTypeRepository.GetByIdAsync(SectionDto.MemberTypeId);
+            if (memberType == null)
+                return Helper.Helper.CreateErrorResult<SectionResult>(HttpStatusCode.BadRequest, "Didn't find the member type you passed it");
+            SectionDto.Price = SectionDto.Price - ((SectionDto.Price * SectionDto.Discount) / 100);
+            _mapper.Map(SectionDto, section);
+            section.PriceWithoutTax = (section.Price * 100) / 114;
+            section.Tax = section.Price - section.PriceWithoutTax;
+            await _SectionRepository.UpdateAsync(section);
             result.Section = SectionDto;
             result.SuccessMessage = MessageEnum.Updated(typeof(Section).Name);
             result.StatusCode = HttpStatusCode.OK;

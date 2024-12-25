@@ -14,11 +14,15 @@ namespace Domain.DTOs
         [Required]
         public string? Name { get; set; }
         [Required]
-        public double Price { get; set; }
+        public double FirstTimeSubscriptionPrice { get; set; }
+        [Required]
+        public double RenewalSubscriptionPrice { get; set; }
         [Range(0, 100, ErrorMessage = "Discount must be between 0 and 100.")]
         public int Discount { get; set; }
         [Required]
         public int MemberTypeId { get; set; }
+        [Required]
+        public int ReferenceId { get; set; }
     }
     public class SectionResult : OperationResult
     {

@@ -11,6 +11,5 @@ namespace DataLayer.Models
     {
         public int id { get; set; }
         public string Name { get; set; } = string.Empty;
-        public int Price { get; set; }
     }
 }

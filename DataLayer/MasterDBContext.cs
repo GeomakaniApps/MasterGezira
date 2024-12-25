@@ -23,6 +23,7 @@ public class MasterDBContext : IdentityDbContext<ApplicationUser, ApplicationRol
     public DbSet<Reference> References { get; set; }
     public DbSet<Member> Members { get; set; }
     public DbSet<ImegesMemberAndMemRef> ImegesMemberAndMemRefs { get; set; }
+    public DbSet<LateFees> LateFees { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(MasterDBContext).Assembly);

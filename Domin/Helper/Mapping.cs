@@ -48,6 +48,9 @@ namespace Domain.Helper
                 .ForMember(dest => dest.Qualification, opt => opt.MapFrom(src => src.Qualification))
                 .ForMember(dest => dest.Transformation, opt => opt.MapFrom(src => src.Transformation));
 
+            CreateMap<LateFees,LateFeesDto>().ReverseMap();
+            CreateMap<LateFees,GetLateFeesDto>().ReverseMap();
+
         }
     }
 }

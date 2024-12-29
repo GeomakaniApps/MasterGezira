@@ -78,5 +78,6 @@ public interface IRepository<T>
     void UpdateRange(IEnumerable<T> entities);
     Task UpdateRangeAsync(IEnumerable<T> entities);
     Task<T> FindLastAsync(string propertyName);
+    Task<bool> ValidateExistenceAsync(Expression<Func<T, bool>> predicate);
 
 }

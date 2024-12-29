@@ -15,7 +15,6 @@ namespace Domain.DTOs
         public IFormFile? Image { get; set; }
         public int? memberId { get; set; }
         public int? memberRefId { get; set; }
-      //  public string? Base64Image { get; set; }
         public class ImageResult : OperationResult
         {
             public ImageMemberAndMembRefDto? Image { get; set; }

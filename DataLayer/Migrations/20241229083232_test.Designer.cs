@@ -3,6 +3,7 @@ using System;
 using DataLayer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataLayer.Migrations
 {
     [DbContext(typeof(MasterDBContext))]
-    partial class MasterDBContextModelSnapshot : ModelSnapshot
+    [Migration("20241229083232_test")]
+    partial class test
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -402,11 +405,11 @@ namespace DataLayer.Migrations
 
             modelBuilder.Entity("DataLayer.Models.Reference", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -415,7 +418,7 @@ namespace DataLayer.Migrations
                     b.Property<int>("Price")
                         .HasColumnType("integer");
 
-                    b.HasKey("Id");
+                    b.HasKey("id");
 
                     b.ToTable("References");
                 });
@@ -485,7 +488,7 @@ namespace DataLayer.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateOnly?>("BirthDate")
+                    b.Property<DateOnly?>("BirthDatee")
                         .HasColumnType("date");
 
                     b.Property<int>("ChildrenOrder")

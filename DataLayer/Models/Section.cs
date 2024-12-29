@@ -20,6 +20,8 @@ namespace DataLayer.Models
         public bool IsDeleted { get; set; }
         public int MemberTypeId { get; set; }
         public MemberType? MemberType { get; set; }
+        public bool? Child { get; set; }
+
 
     }
 }

@@ -48,6 +48,14 @@ namespace Domain.Helper
                 .ForMember(dest => dest.Qualification, opt => opt.MapFrom(src => src.Qualification))
                 .ForMember(dest => dest.Transformation, opt => opt.MapFrom(src => src.Transformation));
 
+            CreateMap<MembersRef, MemberRefDto>()
+            .ForMember(dest => dest.Image, opt => opt.Ignore())
+            .ForMember(dest => dest.JoinDate, opt => opt.Ignore());
+            CreateMap<MemberRefDto, MembersRef>()
+                .ForMember(dest => dest.ImageId, opt => opt.Ignore())
+                .ForMember(dest => dest.Image, opt => opt.Ignore())
+                .ForMember(dest => dest.JoinDate, opt => opt.Ignore());
+
         }
     }
 }

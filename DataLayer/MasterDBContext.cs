@@ -23,9 +23,17 @@ public class MasterDBContext : IdentityDbContext<ApplicationUser, ApplicationRol
     public DbSet<Reference> References { get; set; }
     public DbSet<Member> Members { get; set; }
     public DbSet<ImegesMemberAndMemRef> ImegesMemberAndMemRefs { get; set; }
+    public DbSet<MembersRef> MembersRefs { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(MasterDBContext).Assembly);
         base.OnModelCreating(modelBuilder);
+        modelBuilder.Entity<MembersRef>()
+.HasOne(mr => mr.Member)
+.WithMany()
+.HasForeignKey(mr => mr.MemberCode)
+.HasPrincipalKey(m => m.MemberCode)
+.OnDelete(DeleteBehavior.Restrict);
     }
 }

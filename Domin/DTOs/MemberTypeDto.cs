@@ -13,8 +13,6 @@ namespace Domain.DTOs
     {
         [Required]
         public string Name { get; set; } = string.Empty;
-        public int? Price { get; set; }
-
     }
     public class MemberTypeResult : OperationResult
     {

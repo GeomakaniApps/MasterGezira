@@ -60,6 +60,9 @@ namespace Domain.Helper
                 .ForMember(dest => dest.FileName, opt => opt.MapFrom(src => src.FileName)) 
                 .ForMember(dest => dest.Attachment, opt => opt.MapFrom(src => src.Base64Image != null ? Convert.FromBase64String(src.Base64Image) : null));
 
+            CreateMap<LateFees,LateFeesDto>().ReverseMap();
+            CreateMap<LateFees,GetLateFeesDto>().ReverseMap();
+
         }
     }
 }

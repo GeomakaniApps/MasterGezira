@@ -8,10 +8,11 @@ using System.Threading.Tasks;
 
 namespace DataLayer.Models
 {
-    public class MemberType : Entity
+    public class LateFees:Entity
     {
-        public int id { get; set; }
-        public string Name { get; set; } = string.Empty;
+        public int Id { get; set; }
+        public DateOnly FineDate { get; set; }
+        public int FineRate { get; set; }
         [DefaultValue(false)]
         public bool IsDeleted { get; set; }
     }

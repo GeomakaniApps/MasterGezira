@@ -24,6 +24,7 @@ public class MasterDBContext : IdentityDbContext<ApplicationUser, ApplicationRol
     public DbSet<Member> Members { get; set; }
     public DbSet<MembersProfilePictures> MembersProfilePictures { get; set; }
     public DbSet<MembersAttachments> MembersAttachments { get; set; }
+    public DbSet<LateFees> LateFees { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(MasterDBContext).Assembly);

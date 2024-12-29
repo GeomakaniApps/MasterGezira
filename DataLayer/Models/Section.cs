@@ -12,9 +12,8 @@ namespace DataLayer.Models
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
-        public double Price { get; set; }
-        public double PriceWithoutTax { get; set; }
-        public double Tax { get; set; }
+        public double FirstTimeSubscriptionPrice { get; set; }
+        public double RenewalSubscriptionPrice { get; set; }
         public int Discount { get; set; }
         [DefaultValue(false)]
         public bool IsDeleted { get; set; }
@@ -22,6 +21,8 @@ namespace DataLayer.Models
         public MemberType? MemberType { get; set; }
         public bool? Child { get; set; }
 
+        public int ReferenceId { get; set; }
+        public Reference? Reference { get; set; }
 
     }
 }

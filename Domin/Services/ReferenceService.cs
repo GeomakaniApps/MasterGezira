@@ -20,8 +20,6 @@ namespace Domain.Services
             var result = new ReferenceResult();
             if (_ReferenceRepository.Find(n => n.Name.ToLower() == referenceDto.Name.ToLower()) != null)
                 return Helper.Helper.CreateErrorResult<ReferenceResult>(HttpStatusCode.BadRequest, ErrorEnum.Existed("Reference"));
-            if (referenceDto.Price <= 0)
-                 return Helper.Helper.CreateErrorResult<ReferenceResult>(HttpStatusCode.BadRequest, "Price is not valid");
      
             Reference Reference = _mapper.Map<Reference>(referenceDto);
             await _ReferenceRepository.AddAsync(Reference);
@@ -78,9 +76,7 @@ namespace Domain.Services
             var isDuplacateName = await _ReferenceRepository.FindAsync(n => n.Name.ToLower() == referenceDto.Name.ToLower() && n.Id != id);
             if (isDuplacateName != null)
                 return Helper.Helper.CreateErrorResult<ReferenceResult>(HttpStatusCode.Conflict, ErrorEnum.Existed("Reference"));
-            if (referenceDto.Price <= 0)
-                return Helper.Helper.CreateErrorResult<ReferenceResult>(HttpStatusCode.BadRequest, "price is not valid");
-        
+       
             _mapper.Map(referenceDto, Reference);          
             await _ReferenceRepository.UpdateAsync(Reference);
             result.Reference = referenceDto;

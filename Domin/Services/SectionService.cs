@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Services
 {
-    public class SectionService(IRepository<Section> _SectionRepository, IMapper _mapper,IRepository<MemberType> _memberTypeRepository) : ISectionService
+    public class SectionService(IRepository<Section> _SectionRepository, IMapper _mapper,IRepository<MemberType> _memberTypeRepository, IRepository<Reference> _referenceRepository) : ISectionService
     {
         public async Task<SectionResult> CreateAsync(SectionDto SectionDto)
         {
@@ -24,10 +24,12 @@ namespace Domain.Services
             var memberType = await _memberTypeRepository.GetByIdAsync(SectionDto.MemberTypeId);
             if (memberType == null)
                 return Helper.Helper.CreateErrorResult<SectionResult>(HttpStatusCode.BadRequest, "Didn't find the member type you passed it");
-            SectionDto.Price = SectionDto.Price - ((SectionDto.Price * SectionDto.Discount) / 100);
+            var reference = await _referenceRepository.GetByIdAsync(SectionDto.ReferenceId);
+            if (reference == null)
+                return Helper.Helper.CreateErrorResult<SectionResult>(HttpStatusCode.BadRequest, "Didn't find the reference you passed it");
+            SectionDto.FirstTimeSubscriptionPrice = SectionDto.FirstTimeSubscriptionPrice - ((SectionDto.FirstTimeSubscriptionPrice * SectionDto.Discount) / 100);
+            SectionDto.RenewalSubscriptionPrice = SectionDto.RenewalSubscriptionPrice - ((SectionDto.RenewalSubscriptionPrice * SectionDto.Discount) / 100);
             Section section = _mapper.Map<Section>(SectionDto);
-            section.PriceWithoutTax = (section.Price * 100) / 114;
-            section.Tax = section.Price - section.PriceWithoutTax;
             await _SectionRepository.AddAsync(section);
             result.Section = SectionDto;
             result.SuccessMessage = MessageEnum.Created(typeof(Section).Name);
@@ -101,10 +103,12 @@ namespace Domain.Services
             var memberType = await _memberTypeRepository.GetByIdAsync(SectionDto.MemberTypeId);
             if (memberType == null)
                 return Helper.Helper.CreateErrorResult<SectionResult>(HttpStatusCode.BadRequest, "Didn't find the member type you passed it");
-            SectionDto.Price = SectionDto.Price - ((SectionDto.Price * SectionDto.Discount) / 100);
+            var reference = await _referenceRepository.GetByIdAsync(SectionDto.ReferenceId);
+            if (reference == null)
+                return Helper.Helper.CreateErrorResult<SectionResult>(HttpStatusCode.BadRequest, "Didn't find the reference you passed it");
+            SectionDto.FirstTimeSubscriptionPrice = SectionDto.FirstTimeSubscriptionPrice - ((SectionDto.FirstTimeSubscriptionPrice * SectionDto.Discount) / 100);
+            SectionDto.RenewalSubscriptionPrice = SectionDto.RenewalSubscriptionPrice - ((SectionDto.RenewalSubscriptionPrice * SectionDto.Discount) / 100);
             _mapper.Map(SectionDto, section);
-            section.PriceWithoutTax = (section.Price * 100) / 114;
-            section.Tax = section.Price - section.PriceWithoutTax;
             await _SectionRepository.UpdateAsync(section);
             result.Section = SectionDto;
             result.SuccessMessage = MessageEnum.Updated(typeof(Section).Name);

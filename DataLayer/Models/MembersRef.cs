@@ -16,7 +16,7 @@ public class MembersRef : Entity
     public int ChildrenOrder { get; set; }
     public string? Sex { get; set; }
     public int? ImageId { get; set; }
-    public ImegesMemberAndMemRef? Image { get; set; }
+    public MembersProfilePictures? Image { get; set; }
     public DateOnly? JoinDate { get; set; }
     public int? CreateBy { get; set; }
     public DateTime? CreateAt { get; set; }

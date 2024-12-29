@@ -28,7 +28,7 @@ public class MemberRefDto
     public class MemberRefResult : OperationResult
     {
         public MemberRefDto? MemberRef { get; set; }
-        public ImageMemberAndMembRefDto? Image { get; set; } 
+        public MembersProfilePicturesDto? Image { get; set; } 
 
     }
 }

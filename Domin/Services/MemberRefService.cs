@@ -14,7 +14,7 @@ using static Domain.DTOs.MemberRefDto;
 
 namespace Domain.Services;
 
-public class MemberRefService(IRepository<MembersRef> _memberRefRepository, IRepository<Member> _memberRepository, IRepository<Reference> _referenceRepository, IRepository<Section> _sectionRepository, IImageMemberAndMembRefService _imageService, IMapper _mapper, IChangeLogService _changeLogService) : IMemberRefService
+public class MemberRefService(IRepository<MembersRef> _memberRefRepository, IRepository<Member> _memberRepository, IRepository<Reference> _referenceRepository, IRepository<Section> _sectionRepository, IMembersProfilePicturesService _imageService, IMapper _mapper, IChangeLogService _changeLogService) : IMemberRefService
 {
 
 
@@ -52,7 +52,7 @@ public class MemberRefService(IRepository<MembersRef> _memberRefRepository, IRep
 
         if (memberRefDto.Image != null)
         {
-            var imageResult = await _imageService.CreateAsync(new ImageMemberAndMembRefDto
+            var imageResult = await _imageService.CreateAsync(new MembersProfilePicturesDto
             {
                 Image = memberRefDto.Image,
                 memberRefId = memberRef.Id,

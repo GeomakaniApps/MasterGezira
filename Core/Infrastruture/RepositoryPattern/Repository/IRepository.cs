@@ -81,5 +81,6 @@ public interface IRepository<T>
     Task UpdateRangeAsync(IEnumerable<T> entities);
     Task<T> FindLastAsync(string propertyName);
     Task<PagedList<PaginationRequest<T>>> FilterAll(List<FilterDTO> filterDTOs, UserParams userParams, List<string>? includeProperties = null, Dictionary<string, List<string>>? thenIncludeProperties = null);
+    Task<bool> ValidateExistenceAsync(Expression<Func<T, bool>> predicate);
 
 }

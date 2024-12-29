@@ -63,6 +63,14 @@ namespace Domain.Helper
             CreateMap<LateFees,LateFeesDto>().ReverseMap();
             CreateMap<LateFees,GetLateFeesDto>().ReverseMap();
 
+            CreateMap<MembersRef, MemberRefDto>()
+            .ForMember(dest => dest.Image, opt => opt.Ignore())
+            .ForMember(dest => dest.JoinDate, opt => opt.Ignore());
+            CreateMap<MemberRefDto, MembersRef>()
+                .ForMember(dest => dest.ImageId, opt => opt.Ignore())
+                .ForMember(dest => dest.Image, opt => opt.Ignore())
+                .ForMember(dest => dest.JoinDate, opt => opt.Ignore());
+
         }
     }
 }

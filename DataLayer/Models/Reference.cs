@@ -9,7 +9,7 @@ namespace DataLayer.Models
 {
     public class Reference : Entity
     {
-        public int id { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
     }
 }

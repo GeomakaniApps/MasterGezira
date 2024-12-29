@@ -73,7 +73,7 @@ namespace Domain.Services
             var Reference = await _ReferenceRepository.GetByIdAsync(id);
             if (Reference == null)
                 return Helper.Helper.CreateErrorResult<ReferenceResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("Reference"));
-            var isDuplacateName = await _ReferenceRepository.FindAsync(n => n.Name.ToLower() == referenceDto.Name.ToLower() && n.id != id);
+            var isDuplacateName = await _ReferenceRepository.FindAsync(n => n.Name.ToLower() == referenceDto.Name.ToLower() && n.Id != id);
             if (isDuplacateName != null)
                 return Helper.Helper.CreateErrorResult<ReferenceResult>(HttpStatusCode.Conflict, ErrorEnum.Existed("Reference"));
        

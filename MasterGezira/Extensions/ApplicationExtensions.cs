@@ -31,6 +31,8 @@ public static class ApplicationExtensions
         services.AddScoped<IMembersProfilePicturesService, MembersProfilePicturesService>();
         services.AddScoped<IMembersAttachmentService, MembersAttachmentService>();
         services.AddScoped<IChangeLogService, ChangeLogService>();
+        services.AddScoped<IMemberRefService, MemberRefService>();
+
         services.AddScoped<ILateFeesService, LateFeesService>();
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddTransient(typeof(IUnitOfWork), typeof(UnitOfWork));

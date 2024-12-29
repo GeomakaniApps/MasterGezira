@@ -27,8 +27,6 @@ namespace Domain.Services
             var reference = await _referenceRepository.GetByIdAsync(SectionDto.ReferenceId);
             if (reference == null)
                 return Helper.Helper.CreateErrorResult<SectionResult>(HttpStatusCode.BadRequest, "Didn't find the reference you passed it");
-            SectionDto.FirstTimeSubscriptionPrice = SectionDto.FirstTimeSubscriptionPrice - ((SectionDto.FirstTimeSubscriptionPrice * SectionDto.Discount) / 100);
-            SectionDto.RenewalSubscriptionPrice = SectionDto.RenewalSubscriptionPrice - ((SectionDto.RenewalSubscriptionPrice * SectionDto.Discount) / 100);
             Section section = _mapper.Map<Section>(SectionDto);
             await _SectionRepository.AddAsync(section);
             result.Section = SectionDto;
@@ -106,8 +104,6 @@ namespace Domain.Services
             var reference = await _referenceRepository.GetByIdAsync(SectionDto.ReferenceId);
             if (reference == null)
                 return Helper.Helper.CreateErrorResult<SectionResult>(HttpStatusCode.BadRequest, "Didn't find the reference you passed it");
-            SectionDto.FirstTimeSubscriptionPrice = SectionDto.FirstTimeSubscriptionPrice - ((SectionDto.FirstTimeSubscriptionPrice * SectionDto.Discount) / 100);
-            SectionDto.RenewalSubscriptionPrice = SectionDto.RenewalSubscriptionPrice - ((SectionDto.RenewalSubscriptionPrice * SectionDto.Discount) / 100);
             _mapper.Map(SectionDto, section);
             await _SectionRepository.UpdateAsync(section);
             result.Section = SectionDto;

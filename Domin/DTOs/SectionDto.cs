@@ -17,8 +17,13 @@ namespace Domain.DTOs
         public double FirstTimeSubscriptionPrice { get; set; }
         [Required]
         public double RenewalSubscriptionPrice { get; set; }
-        [Range(0, 100, ErrorMessage = "Discount must be between 0 and 100.")]
-        public int Discount { get; set; }
+        public double MaintenanceFee { get; set; }
+        public double MembershipCardFee { get; set; }
+        public double Swimming { get; set; }
+        public double JoinFee { get; set; }
+        public double NewReferenceFee { get; set; }
+        public double PreviousYearsFee { get; set; }
+        public double SeparateFee { get; set; }
         [Required]
         public int MemberTypeId { get; set; }
         [Required]

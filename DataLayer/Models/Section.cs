@@ -14,7 +14,13 @@ namespace DataLayer.Models
         public string Name { get; set; } = string.Empty;
         public double FirstTimeSubscriptionPrice { get; set; }
         public double RenewalSubscriptionPrice { get; set; }
-        public int Discount { get; set; }
+        public double MaintenanceFee { get; set; }
+        public double MembershipCardFee { get; set; }
+        public double Swimming { get; set; }
+        public double JoinFee { get; set; }
+        public double NewReferenceFee { get; set; }
+        public double PreviousYearsFee { get; set; }
+        public double SeparateFee { get; set; }
         [DefaultValue(false)]
         public bool IsDeleted { get; set; }
         public int MemberTypeId { get; set; }

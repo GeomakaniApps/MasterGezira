@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace DataLayer.Models
 {
-    public class ImegesMemberAndMemRef : Entity
+    public class MembersProfilePictures : Entity
     {
         public int id { get; set; }
         public int? memberId { get; set; }
@@ -22,7 +22,6 @@ namespace DataLayer.Models
         public bool IsDeleted { get; set; }
         public int? CreateBy { get; set; }
         public DateTime? CreateAt { get; set; }
-        [NotMapped]
-        public Member? Member { get; set; }
+        public ICollection<Member>? Members { get; set; }
     }
 }

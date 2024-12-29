@@ -13,18 +13,19 @@ namespace Domain.DTOs
         public int MemberCode { get; set; }
         public string? Name { get; set; }
         public long? NationalId { get; set; }
-        public int? ImageId { get; set; }
+        public int? MembersProfilePicturesid { get; set; }
         public string? Image { get; set; }
         public DateOnly? BirthDate { get; set; }
         public string? Address { get; set; }
         public string? JobAddress { get; set; }
-        public int? JobTelephone { get; set; }
+        public string? JobTelephone { get; set; }
         public string? MaritalStatus { get; set; }
         public int? NationalityId { get; set; }
         public string? Religion { get; set; }
-       public string? Sex { get; set; }
-        public int? PhoneNumber { get; set; }
+        public string? Sex { get; set; }
+        public string? PhoneNumber { get; set; }
         public string? Remark { get; set; }
+        public bool? IsActive { get; set; }
         public string? BirthPlace { get; set; }
         public CityDto? City { get; set; }
         public NationalityDto? Nationality { get; set; }
@@ -34,11 +35,13 @@ namespace Domain.DTOs
         public AreaDto? Area { get; set; }
         public QualificationDto? Qualification { get; set; }
         public TransformationDto? Transformation { get; set; }
+        public List<MembersAttachmentsDto>? Attachment { get; set; }
 
         public class GetMemberResult : OperationResult
         {
             public List<GetMemberDto> Members { get; set; }
             public GetMemberDto Member { get; set; }
+            public int Count { get; set; }
         }
     }
 }

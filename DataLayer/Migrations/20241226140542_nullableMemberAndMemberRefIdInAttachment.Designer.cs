@@ -3,6 +3,7 @@ using System;
 using DataLayer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataLayer.Migrations
 {
     [DbContext(typeof(MasterDBContext))]
-    partial class MasterDBContextModelSnapshot : ModelSnapshot
+    [Migration("20241226140542_nullableMemberAndMemberRefIdInAttachment")]
+    partial class nullableMemberAndMemberRefIdInAttachment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -282,6 +285,9 @@ namespace DataLayer.Migrations
                     b.Property<int?>("UpdateBy")
                         .HasColumnType("integer");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AreaId");
@@ -352,9 +358,6 @@ namespace DataLayer.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("FileName")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ImageExtension")
                         .HasColumnType("text");
 
                     b.Property<bool>("IsDeleted")

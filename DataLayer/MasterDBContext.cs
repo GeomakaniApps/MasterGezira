@@ -22,7 +22,8 @@ public class MasterDBContext : IdentityDbContext<ApplicationUser, ApplicationRol
     public DbSet<Qualification> Qualifications { get; set; }
     public DbSet<Reference> References { get; set; }
     public DbSet<Member> Members { get; set; }
-    public DbSet<ImegesMemberAndMemRef> ImegesMemberAndMemRefs { get; set; }
+    public DbSet<MembersProfilePictures> MembersProfilePictures { get; set; }
+    public DbSet<MembersAttachments> MembersAttachments { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(MasterDBContext).Assembly);

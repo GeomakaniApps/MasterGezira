@@ -3,6 +3,7 @@ using System;
 using DataLayer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataLayer.Migrations
 {
     [DbContext(typeof(MasterDBContext))]
-    partial class MasterDBContextModelSnapshot : ModelSnapshot
+    [Migration("20241225150435_addIsActiveInMember")]
+    partial class addIsActiveInMember
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -210,6 +213,9 @@ namespace DataLayer.Migrations
                     b.Property<int?>("DeleteBy")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("ImageId")
+                        .HasColumnType("integer");
+
                     b.Property<bool?>("IsActive")
                         .HasColumnType("boolean");
 
@@ -240,7 +246,7 @@ namespace DataLayer.Migrations
                     b.Property<int?>("MemberTypeId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("MembersProfilePicturesId")
+                    b.Property<int?>("MembersProfilePicturesid")
                         .HasColumnType("integer");
 
                     b.Property<string>("Name")
@@ -282,6 +288,9 @@ namespace DataLayer.Migrations
                     b.Property<int?>("UpdateBy")
                         .HasColumnType("integer");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AreaId");
@@ -292,7 +301,7 @@ namespace DataLayer.Migrations
 
                     b.HasIndex("MemberTypeId");
 
-                    b.HasIndex("MembersProfilePicturesId");
+                    b.HasIndex("MembersProfilePicturesid");
 
                     b.HasIndex("NationalityId");
 
@@ -354,19 +363,17 @@ namespace DataLayer.Migrations
                     b.Property<string>("FileName")
                         .HasColumnType("text");
 
-                    b.Property<string>("ImageExtension")
-                        .HasColumnType("text");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
-                    b.Property<int?>("MemberId")
+                    b.Property<int>("MemberId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("MemberRefId")
+                    b.Property<int>("MemberRefId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -632,9 +639,9 @@ namespace DataLayer.Migrations
                         .WithMany()
                         .HasForeignKey("MemberTypeId");
 
-                    b.HasOne("DataLayer.Models.MembersProfilePictures", "MembersPictures")
+                    b.HasOne("DataLayer.Models.MembersProfilePictures", "MembersProfilePictures")
                         .WithMany("Members")
-                        .HasForeignKey("MembersProfilePicturesId");
+                        .HasForeignKey("MembersProfilePicturesid");
 
                     b.HasOne("DataLayer.Models.Nationality", "Nationality")
                         .WithMany()
@@ -660,7 +667,7 @@ namespace DataLayer.Migrations
 
                     b.Navigation("MemberType");
 
-                    b.Navigation("MembersPictures");
+                    b.Navigation("MembersProfilePictures");
 
                     b.Navigation("Nationality");
 
@@ -675,7 +682,9 @@ namespace DataLayer.Migrations
                 {
                     b.HasOne("DataLayer.Models.Member", "Member")
                         .WithMany("AttachmentMembers")
-                        .HasForeignKey("MemberId");
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Member");
                 });

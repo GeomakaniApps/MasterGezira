@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using DataLayer.Services;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace MasterGezira
 {
@@ -146,4 +147,24 @@ namespace MasterGezira
             app.Run();
         }
     }
-}
+    public class AddFileUploadFilter : IOperationFilter
+    {
+        public void Apply(OpenApiOperation operation, OperationFilterContext context)
+        {
+            if (operation.RequestBody != null)
+            {
+                foreach (var content in operation.RequestBody.Content)
+                {
+                    if (content.Key.Equals("multipart/form-data", StringComparison.OrdinalIgnoreCase))
+                    {
+                        content.Value.Schema.Properties.Add("File", new OpenApiSchema
+                        {
+                            Type = "string",
+                            Format = "binary"
+                        });
+                    }
+                }
+            }
+        }
+    }
+    }

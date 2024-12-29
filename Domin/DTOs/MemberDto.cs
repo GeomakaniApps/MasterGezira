@@ -13,6 +13,7 @@ namespace Domain.DTOs
     public class MemberDto : Entity
     {
         [Required]
+        [RegularExpression(@"^[a-zA-Z\u0600-\u06FF\s]+$", ErrorMessage = "Name must only contain letters and spaces.")]
         public string? Name { get; set; } = string.Empty;
         [Required]
         [RegularExpression(@"^(?!0)\d{14}$", ErrorMessage = "NationalId must be a 14-digit number and cannot start with zero.")]
@@ -24,9 +25,9 @@ namespace Domain.DTOs
         public int? JobId { get; set; }
         public string? JobAddress { get; set; }
         [Required]
-      //  [StringLength(11, MinimumLength = 8, ErrorMessage = "Job Telephone should be between 8 and 11 characters long.")]
-     //   [RegularExpression("^(?!010|011|012|015)\\d{5,8}$", ErrorMessage = "Job Telephone format is invalid.")]
-        public int? JobTelephone { get; set; }
+        [StringLength(11, MinimumLength = 5, ErrorMessage = "Job Telephone should be between 5 and 11 characters long.")]
+        [RegularExpression("^\\d{5,11}$", ErrorMessage = "Job Telephone format is invalid.")]
+        public string? JobTelephone { get; set; }
         [Required]
         [RegularExpression("^(اعزب|متزوج)$", ErrorMessage = "Invalid value for religion. Allowed values are 'اعزب' or 'متزوج'.")]
         public string? MaritalStatus { get; set; }
@@ -38,13 +39,12 @@ namespace Domain.DTOs
         [Required]
         [RegularExpression("^(أنثي|ذكر)$", ErrorMessage = "Invalid value for Sex. Allowed values are 'أنثي' or 'ذكر'.")]
         public string? Sex { get; set; }
+        [Required]
+        [StringLength(11, MinimumLength = 11, ErrorMessage = "Phone Number should be exactly 11 characters long.")]
+        [RegularExpression("^(010|011|012|015)\\d{8}$", ErrorMessage = "Phone Number format is invalid.")]
         //[Required]
-        //[StringLength(11, MinimumLength = 11, ErrorMessage = "Phone Number should be exactly 11 characters long.")]
-        //[RegularExpression("^(010|011|012|015)\\d{8}$", ErrorMessage = "Phone Number format is invalid.")]
-        [Required]
-      //  [Range(10000000000, 99999999999, ErrorMessage = "Phone Number should be exactly 11 digits.")]
-        public int? PhoneNumber { get; set; }
-        [Required]
+        //  [Range(10000000000, 99999999999, ErrorMessage = "Phone Number should be exactly 11 digits.")]
+        public string? PhoneNumber { get; set; }
         public string? Remark { get; set; }
         [Required]
         public int? MemberTypeId { get; set; }
@@ -56,10 +56,13 @@ namespace Domain.DTOs
         public int? AreaId { get; set; }
         [Required]
         public int? QualificationId { get; set; }
+     //   public bool? IsActive { get; set; }
         //[Required]
         //public int? TransformationId { get; set; }
         public string? BirthPlace { get; set; }
+        public string? Base64Image { get; set; }
         public IFormFile? Image { get; set; }
+        public List<MembersAttachmentsDto>? Attachments { get; set; }
         public class MemberResult : OperationResult
         {
             public MemberDto? Member { get; set; }

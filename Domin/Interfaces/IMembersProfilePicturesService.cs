@@ -4,15 +4,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static Domain.DTOs.ImageMemberAndMembRefDto;
+using static Domain.DTOs.MembersProfilePicturesDto;
 
 namespace Domain.Interfaces
 {
-    public interface IImageMemberAndMembRefService
+    public interface IMembersProfilePicturesService
     {
         Task<GetImageResult> GetAsync(int id);
-        Task<ImageResult> CreateAsync(ImageMemberAndMembRefDto imgDto);
-        Task<ImageResult> UpdateAsync(int id, ImageMemberAndMembRefDto ImgDto);
+        Task<ImageResult> CreateAsync(MembersProfilePicturesDto imgDto);
+        Task<ImageResult> UpdateAsync(int id, MembersProfilePicturesDto ImgDto);
         Task<ImageResult> DeleteAsync(int id);
     }
 }

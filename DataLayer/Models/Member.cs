@@ -17,17 +17,17 @@ namespace DataLayer.Models
         public int MemberCode { get; set; }
         public string? Name { get; set; }
         public long? NationalId { get; set; }
-        public int? ImageId { get; set; }
+        public int? MembersProfilePicturesId { get; set; }
         public DateOnly? BirthDate { get; set; }
         public string? Address { get; set; }
         public int? JobId { get; set; }
         public string? JobAddress { get; set; }
-        public int? JobTelephone { get; set; }
+        public string? JobTelephone { get; set; }
         public string? MaritalStatus { get; set; }
         public int? NationalityId { get; set; }
         public string? Religion { get; set; }
         public string? Sex { get; set; }
-        public int? PhoneNumber { get; set; }
+        public string? PhoneNumber { get; set; }
         public string? Remark { get; set; }
         public int? MemberTypeId { get; set; }
         public int? SectionId { get; set; }
@@ -36,7 +36,7 @@ namespace DataLayer.Models
         public int? QualificationId { get; set; }
         public int? TransformationId { get; set; }
         public string? BirthPlace { get; set; }
-        public string? UserId { get; set; }
+      //  public string? UserId { get; set; }
         public DateOnly? JoinDate { get; set; }
         public int? CreateBy { get; set; }
         public DateTime? CreateAt { get; set; }
@@ -45,9 +45,10 @@ namespace DataLayer.Models
         public int? DeleteBy { get; set; }
         public DateTime? DeleteAt { get; set; }
         [DefaultValue(false)]
-        public bool? IsDeleted { get; set; }
+        public bool IsDeleted { get; set; }
+        public bool? IsActive { get; set; }
         [DefaultValue(false)]
-        public bool? Suspended { get; set; }
+        public bool Suspended { get; set; }
         public Area? Area { get; set; }
         public City? City { get; set; }
         public Job? Job { get; set; }
@@ -56,6 +57,7 @@ namespace DataLayer.Models
         public Qualification? Qualification { get; set; }
         public Section? Section { get; set; }
         public Transformation? Transformation { get; set; }
-        public ImegesMemberAndMemRef? Image { get; set; }
+        public MembersProfilePictures? MembersPictures { get; set; }
+        public ICollection<MembersAttachments> AttachmentMembers { get; set; } = new List<MembersAttachments>();
     }
 }

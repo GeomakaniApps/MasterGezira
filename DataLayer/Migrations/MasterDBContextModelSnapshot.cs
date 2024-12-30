@@ -492,6 +492,9 @@ namespace DataLayer.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<bool?>("Child")
+                        .HasColumnType("boolean");
+
                     b.Property<double>("FirstTimeSubscriptionPrice")
                         .HasColumnType("double precision");
 

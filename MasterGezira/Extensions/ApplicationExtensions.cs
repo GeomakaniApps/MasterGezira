@@ -31,6 +31,7 @@ public static class ApplicationExtensions
         services.AddScoped<IImageMemberAndMembRefService, ImageMemberAndMembRefService>();
         services.AddScoped<IChangeLogService, ChangeLogService>();
         services.AddScoped<ILateFeesService, LateFeesService>();
+        services.AddScoped<ITransactionTypeService, TransactionTypeService>();
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddTransient(typeof(IUnitOfWork), typeof(UnitOfWork));
         //services.AddAutoMapper(Assembly.GetExecutingAssembly());

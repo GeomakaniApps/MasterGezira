@@ -50,6 +50,8 @@ namespace Domain.Helper
 
             CreateMap<LateFees,LateFeesDto>().ReverseMap();
             CreateMap<LateFees,GetLateFeesDto>().ReverseMap();
+            CreateMap<TransactionType, TransactionTypeDto>().ReverseMap();
+            CreateMap<TransactionType, GetTransactionTypeDto>().ReverseMap();
 
         }
     }

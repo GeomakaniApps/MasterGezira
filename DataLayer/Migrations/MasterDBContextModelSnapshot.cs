@@ -479,9 +479,6 @@ namespace DataLayer.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("Price")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
 
                     b.ToTable("References");
@@ -611,7 +608,8 @@ namespace DataLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ImageId");
+                    b.HasIndex("ImageId")
+                        .IsUnique();
 
                     b.HasIndex("MemberCode");
 
@@ -812,9 +810,9 @@ namespace DataLayer.Migrations
 
             modelBuilder.Entity("MembersRef", b =>
                 {
-                    b.HasOne("DataLayer.Models.ImegesMemberAndMemRef", "Image")
-                        .WithMany()
-                        .HasForeignKey("ImageId");
+                    b.HasOne("DataLayer.Models.MembersProfilePictures", "Image")
+                        .WithOne("MembersRefs")
+                        .HasForeignKey("MembersRef", "ImageId");
 
                     b.HasOne("DataLayer.Models.Member", "Member")
                         .WithMany()
@@ -901,6 +899,8 @@ namespace DataLayer.Migrations
             modelBuilder.Entity("DataLayer.Models.MembersProfilePictures", b =>
                 {
                     b.Navigation("Members");
+
+                    b.Navigation("MembersRefs");
                 });
 #pragma warning restore 612, 618
         }

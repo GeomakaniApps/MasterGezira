@@ -8,6 +8,8 @@ using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using DataLayer.Services;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using Microsoft.Extensions.Options;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace MasterGezira
 {
@@ -28,6 +30,11 @@ namespace MasterGezira
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
 
             });
+            //builder.Services.AddDbContext<MasterDBContext>(options =>
+            //{
+            //    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
+            //           .ConfigureWarnings(warnings => warnings.Ignore(RelationalEventId.PendingModelChangesWarning));
+            //});
             #endregion
             // Add services to the container.
             #region ActionFilters

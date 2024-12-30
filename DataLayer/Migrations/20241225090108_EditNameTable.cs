@@ -147,25 +147,25 @@ namespace DataLayer.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "ImegesMemberAndMemRefs",
-                columns: table => new
-                {
-                    id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    CreateAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    CreateBy = table.Column<int>(type: "integer", nullable: true),
-                    Image = table.Column<byte[]>(type: "bytea", nullable: true),
-                    ImageExtension = table.Column<string>(type: "text", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    memberId = table.Column<int>(type: "integer", nullable: true),
-                    memberRefId = table.Column<int>(type: "integer", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ImegesMemberAndMemRefs", x => x.id);
-                });
+            //migrationBuilder.CreateTable(
+            //    name: "ImegesMemberAndMemRefs",
+            //    columns: table => new
+            //    {
+            //        id = table.Column<int>(type: "integer", nullable: false)
+            //            .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+            //        CreateAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+            //        CreateBy = table.Column<int>(type: "integer", nullable: true),
+            //        Image = table.Column<byte[]>(type: "bytea", nullable: true),
+            //        ImageExtension = table.Column<string>(type: "text", nullable: true),
+            //        IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+            //        Name = table.Column<string>(type: "text", nullable: false),
+            //        memberId = table.Column<int>(type: "integer", nullable: true),
+            //        memberRefId = table.Column<int>(type: "integer", nullable: true)
+            //    },
+            //    constraints: table =>
+            //    {
+            //        table.PrimaryKey("PK_ImegesMemberAndMemRefs", x => x.id);
+            //    });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Members_ImageId",
@@ -177,12 +177,13 @@ namespace DataLayer.Migrations
                 table: "AttachmentMemberAndMemRefs",
                 column: "MemberId");
 
-            migrationBuilder.AddForeignKey(
-                name: "FK_Members_ImegesMemberAndMemRefs_ImageId",
-                table: "Members",
-                column: "ImageId",
-                principalTable: "ImegesMemberAndMemRefs",
-                principalColumn: "id");
+            //migrationBuilder.AddForeignKey(
+            //    name: "FK_Members_ImegesMemberAndMemRefs_ImageId",
+            //    table: "Members",
+            //    column: "ImageId",
+            //    principalTable: "ImegesMemberAndMemRefs",
+            //    principalColumn: "id");
+
         }
     }
 }

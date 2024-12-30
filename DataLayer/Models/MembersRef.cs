@@ -1,6 +1,7 @@
 ﻿using DataLayer.Helpers;
 using DataLayer.Models;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 
 public class MembersRef : Entity
 {

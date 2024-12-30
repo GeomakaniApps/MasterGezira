@@ -23,5 +23,6 @@ namespace DataLayer.Models
         public int? CreateBy { get; set; }
         public DateTime? CreateAt { get; set; }
         public ICollection<Member>? Members { get; set; }
+        public MembersRef? MembersRefs { get; set; }
     }
 }

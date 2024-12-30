@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 
 namespace Domain.DTOs
 {
-    public class GetImagMamberAndMembRefDto : Entity
+    public class GetMembersProfilePicturesDto : Entity
     {
         public int Id { get; set; }
         public string Base64Image { get; set; }
     }
     public class GetImageResult : OperationResult
     {
-        public GetImagMamberAndMembRefDto GetImag { get; set; }
+        public GetMembersProfilePicturesDto GetImag { get; set; }
     }
 }

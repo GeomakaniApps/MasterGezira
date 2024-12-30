@@ -3,6 +3,7 @@ using System;
 using DataLayer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataLayer.Migrations
 {
     [DbContext(typeof(MasterDBContext))]
-    partial class MasterDBContextModelSnapshot : ModelSnapshot
+    [Migration("20241225150435_addIsActiveInMember")]
+    partial class addIsActiveInMember
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -175,28 +178,6 @@ namespace DataLayer.Migrations
                     b.ToTable("Jobs");
                 });
 
-            modelBuilder.Entity("DataLayer.Models.LateFees", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateOnly>("FineDate")
-                        .HasColumnType("date");
-
-                    b.Property<int>("FineRate")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("LateFees");
-                });
-
             modelBuilder.Entity("DataLayer.Models.Member", b =>
                 {
                     b.Property<int>("Id")
@@ -232,6 +213,9 @@ namespace DataLayer.Migrations
                     b.Property<int?>("DeleteBy")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("ImageId")
+                        .HasColumnType("integer");
+
                     b.Property<bool?>("IsActive")
                         .HasColumnType("boolean");
 
@@ -262,7 +246,7 @@ namespace DataLayer.Migrations
                     b.Property<int?>("MemberTypeId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("MembersProfilePicturesId")
+                    b.Property<int?>("MembersProfilePicturesid")
                         .HasColumnType("integer");
 
                     b.Property<string>("Name")
@@ -304,6 +288,9 @@ namespace DataLayer.Migrations
                     b.Property<int?>("UpdateBy")
                         .HasColumnType("integer");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AreaId");
@@ -314,7 +301,7 @@ namespace DataLayer.Migrations
 
                     b.HasIndex("MemberTypeId");
 
-                    b.HasIndex("MembersProfilePicturesId");
+                    b.HasIndex("MembersProfilePicturesid");
 
                     b.HasIndex("NationalityId");
 
@@ -341,6 +328,9 @@ namespace DataLayer.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int?>("Price")
+                        .HasColumnType("integer");
 
                     b.HasKey("id");
 
@@ -373,19 +363,17 @@ namespace DataLayer.Migrations
                     b.Property<string>("FileName")
                         .HasColumnType("text");
 
-                    b.Property<string>("ImageExtension")
-                        .HasColumnType("text");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
-                    b.Property<int?>("MemberId")
+                    b.Property<int>("MemberId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("MemberRefId")
+                    b.Property<int>("MemberRefId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -469,17 +457,20 @@ namespace DataLayer.Migrations
 
             modelBuilder.Entity("DataLayer.Models.Reference", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.Property<int>("Price")
+                        .HasColumnType("integer");
+
+                    b.HasKey("id");
 
                     b.ToTable("References");
                 });
@@ -492,73 +483,22 @@ namespace DataLayer.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<double>("FirstTimeSubscriptionPrice")
-                        .HasColumnType("double precision");
+                    b.Property<int>("Discount")
+                        .HasColumnType("integer");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
-
-                    b.Property<double>("JoinFee")
-                        .HasColumnType("double precision");
-
-                    b.Property<double>("MaintenanceFee")
-                        .HasColumnType("double precision");
-
-                    b.Property<int>("MemberTypeId")
-                        .HasColumnType("integer");
-
-                    b.Property<double>("MembershipCardFee")
-                        .HasColumnType("double precision");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<double>("NewReferenceFee")
-                        .HasColumnType("double precision");
-
-                    b.Property<double>("PreviousYearsFee")
-                        .HasColumnType("double precision");
-
-                    b.Property<int>("ReferenceId")
+                    b.Property<int>("Price")
                         .HasColumnType("integer");
 
-                    b.Property<double>("RenewalSubscriptionPrice")
-                        .HasColumnType("double precision");
-
-                    b.Property<double>("SeparateFee")
-                        .HasColumnType("double precision");
-
-                    b.Property<double>("Swimming")
-                        .HasColumnType("double precision");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("MemberTypeId");
-
-                    b.HasIndex("ReferenceId");
 
                     b.ToTable("Section");
-                });
-
-            modelBuilder.Entity("DataLayer.Models.TransactionType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TransactionTypes");
                 });
 
             modelBuilder.Entity("DataLayer.Models.Transformation", b =>
@@ -576,83 +516,6 @@ namespace DataLayer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Transformations");
-                });
-
-            modelBuilder.Entity("MembersRef", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateOnly?>("BirthDate")
-                        .HasColumnType("date");
-
-                    b.Property<int>("ChildrenOrder")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("CreateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("CreateBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("DeleteAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("DeleteBy")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("ImageId")
-                        .HasColumnType("integer");
-
-                    b.Property<bool?>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateOnly?>("JoinDate")
-                        .HasColumnType("date");
-
-                    b.Property<int>("MemberCode")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("ReferenceId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Remark")
-                        .HasColumnType("text");
-
-                    b.Property<int?>("SectionId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Sex")
-                        .HasColumnType("text");
-
-                    b.Property<bool?>("Suspended")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime?>("UpdateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("UpdateBy")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ImageId")
-                        .IsUnique();
-
-                    b.HasIndex("MemberCode");
-
-                    b.HasIndex("ReferenceId");
-
-                    b.HasIndex("SectionId");
-
-                    b.ToTable("MembersRefs");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -776,9 +639,9 @@ namespace DataLayer.Migrations
                         .WithMany()
                         .HasForeignKey("MemberTypeId");
 
-                    b.HasOne("DataLayer.Models.MembersProfilePictures", "MembersPictures")
+                    b.HasOne("DataLayer.Models.MembersProfilePictures", "MembersProfilePictures")
                         .WithMany("Members")
-                        .HasForeignKey("MembersProfilePicturesId");
+                        .HasForeignKey("MembersProfilePicturesid");
 
                     b.HasOne("DataLayer.Models.Nationality", "Nationality")
                         .WithMany()
@@ -804,7 +667,7 @@ namespace DataLayer.Migrations
 
                     b.Navigation("MemberType");
 
-                    b.Navigation("MembersPictures");
+                    b.Navigation("MembersProfilePictures");
 
                     b.Navigation("Nationality");
 
@@ -819,60 +682,11 @@ namespace DataLayer.Migrations
                 {
                     b.HasOne("DataLayer.Models.Member", "Member")
                         .WithMany("AttachmentMembers")
-                        .HasForeignKey("MemberId");
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Member");
-                });
-
-            modelBuilder.Entity("DataLayer.Models.Section", b =>
-                {
-                    b.HasOne("DataLayer.Models.MemberType", "MemberType")
-                        .WithMany()
-                        .HasForeignKey("MemberTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DataLayer.Models.Reference", "Reference")
-                        .WithMany()
-                        .HasForeignKey("ReferenceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("MemberType");
-
-                    b.Navigation("Reference");
-                });
-
-            modelBuilder.Entity("MembersRef", b =>
-                {
-                    b.HasOne("DataLayer.Models.MembersProfilePictures", "Image")
-                        .WithOne("MembersRefs")
-                        .HasForeignKey("MembersRef", "ImageId");
-
-                    b.HasOne("DataLayer.Models.Member", "Member")
-                        .WithMany()
-                        .HasForeignKey("MemberCode")
-                        .HasPrincipalKey("MemberCode")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("DataLayer.Models.Reference", "Reference")
-                        .WithMany()
-                        .HasForeignKey("ReferenceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DataLayer.Models.Section", "Section")
-                        .WithMany()
-                        .HasForeignKey("SectionId");
-
-                    b.Navigation("Image");
-
-                    b.Navigation("Member");
-
-                    b.Navigation("Reference");
-
-                    b.Navigation("Section");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -934,8 +748,6 @@ namespace DataLayer.Migrations
             modelBuilder.Entity("DataLayer.Models.MembersProfilePictures", b =>
                 {
                     b.Navigation("Members");
-
-                    b.Navigation("MembersRefs");
                 });
 #pragma warning restore 612, 618
         }

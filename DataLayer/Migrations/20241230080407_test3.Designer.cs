@@ -3,6 +3,7 @@ using System;
 using DataLayer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataLayer.Migrations
 {
     [DbContext(typeof(MasterDBContext))]
-    partial class MasterDBContextModelSnapshot : ModelSnapshot
+    [Migration("20241230080407_test3")]
+    partial class test3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -492,44 +495,29 @@ namespace DataLayer.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<bool?>("Child")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("Discount")
+                        .HasColumnType("integer");
+
                     b.Property<double>("FirstTimeSubscriptionPrice")
                         .HasColumnType("double precision");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
-                    b.Property<double>("JoinFee")
-                        .HasColumnType("double precision");
-
-                    b.Property<double>("MaintenanceFee")
-                        .HasColumnType("double precision");
-
                     b.Property<int>("MemberTypeId")
                         .HasColumnType("integer");
-
-                    b.Property<double>("MembershipCardFee")
-                        .HasColumnType("double precision");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<double>("NewReferenceFee")
-                        .HasColumnType("double precision");
-
-                    b.Property<double>("PreviousYearsFee")
-                        .HasColumnType("double precision");
-
                     b.Property<int>("ReferenceId")
                         .HasColumnType("integer");
 
                     b.Property<double>("RenewalSubscriptionPrice")
-                        .HasColumnType("double precision");
-
-                    b.Property<double>("SeparateFee")
-                        .HasColumnType("double precision");
-
-                    b.Property<double>("Swimming")
                         .HasColumnType("double precision");
 
                     b.HasKey("Id");
@@ -539,26 +527,6 @@ namespace DataLayer.Migrations
                     b.HasIndex("ReferenceId");
 
                     b.ToTable("Section");
-                });
-
-            modelBuilder.Entity("DataLayer.Models.TransactionType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TransactionTypes");
                 });
 
             modelBuilder.Entity("DataLayer.Models.Transformation", b =>

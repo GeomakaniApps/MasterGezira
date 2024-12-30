@@ -40,7 +40,7 @@ namespace MasterGezira.API.Controllers
             return StatusCode((int)result.StatusCode, result);
         }
         [HttpPost]
-        [Authorize(Roles = nameof(RoleEnum.Admin))]
+        //[Authorize(Roles = nameof(RoleEnum.Admin))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult> RegisterAdmin([FromBody] RegistrationDto registrationDto, string role)

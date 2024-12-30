@@ -22,12 +22,20 @@ public class MasterDBContext : IdentityDbContext<ApplicationUser, ApplicationRol
     public DbSet<Qualification> Qualifications { get; set; }
     public DbSet<Reference> References { get; set; }
     public DbSet<Member> Members { get; set; }
-    public DbSet<ImegesMemberAndMemRef> ImegesMemberAndMemRefs { get; set; }
+    public DbSet<MembersProfilePictures> MembersProfilePictures { get; set; }
+    public DbSet<MembersAttachments> MembersAttachments { get; set; }
+    public DbSet<MembersRef> MembersRefs { get; set; }
     public DbSet<LateFees> LateFees { get; set; }
     public DbSet<TransactionType> TransactionTypes { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(MasterDBContext).Assembly);
         base.OnModelCreating(modelBuilder);
+        modelBuilder.Entity<MembersRef>()
+            .HasOne(mr => mr.Member)
+            .WithMany()
+            .HasForeignKey(mr => mr.MemberCode)
+            .HasPrincipalKey(m => m.MemberCode)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

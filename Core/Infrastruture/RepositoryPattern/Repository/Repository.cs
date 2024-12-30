@@ -1,6 +1,7 @@
 ﻿using Core.Infrastruture.UnitOfWork;
 using DataLayer;
 using DataLayer.Helpers;
+using DataLayer.Services.Pagination;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -53,7 +54,18 @@ public class Repository<T> : IRepository<T> where T : Entity
         }
         return await query.ToListAsync();
     }
+    public async Task<T> GetByIdAsync(object id, string includeProperties = "")
+    {
+        IQueryable<T> query = _dbContext.Set<T>();
 
+        foreach (var includeProperty in includeProperties.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+        {
+            query = query.Include(includeProperty);
+        }
+
+        
+        return await query.FirstOrDefaultAsync(e => EF.Property<object>(e, "Id").Equals(id));
+    }
 #pragma warning disable CS8603 // Possible null reference return.
     public T GetById(int id)
         => _dbContext.Set<T>().Find(id);
@@ -287,10 +299,181 @@ public class Repository<T> : IRepository<T> where T : Entity
     public async Task<T> FindLastAsync(string propertyName)
     {
         return await _dbContext.Set<T>()
-            .OrderByDescending(m => EF.Property<object>(m, propertyName))  // استخدم اسم الخاصية الديناميكي
+            .OrderByDescending(m => EF.Property<object>(m, propertyName)) 
             .FirstOrDefaultAsync();
+    }
+    public async Task<bool> ValidateExistenceAsync(Expression<Func<T, bool>> predicate)
+    {
+        return await _dbSet.AnyAsync(predicate);
     }
 
 #pragma warning restore CS8603 // Possible null reference return.
+
+    #region Filter All
+
+    public async Task<PagedList<PaginationRequest<T>>> FilterAll(
+          List<FilterDTO> filterDTOs,
+          UserParams userParams,
+          List<string>? includeProperties = null,
+          Dictionary<string, List<string>>? thenIncludeProperties = null)
+    {
+        //  IQueryable<T> query = _dbSet;
+        IQueryable<T> query = _dbContext.Set<T>();
+
+        if (filterDTOs == null || !filterDTOs.Any())
+            throw new Exception("Please provide valid filter conditions");
+
+        var entityType = typeof(T);
+        var parameter = Expression.Parameter(entityType, "n");
+
+        foreach (var filterDTO in filterDTOs)
+        {
+            if (string.IsNullOrEmpty(filterDTO.PropertyName) || string.IsNullOrEmpty(filterDTO.PropertyValue))
+                throw new Exception("Please enter valid values for PropertyName and PropertyValue");
+
+            filterDTO.PropertyName = char.ToUpper(filterDTO.PropertyName[0]) + filterDTO.PropertyName.Substring(1);
+            var propertyNames = filterDTO.PropertyName.Split('.');
+            Expression propertyExpression = parameter;
+
+            foreach (var propertyName in propertyNames)
+            {
+                propertyExpression = Expression.Property(propertyExpression, propertyName);
+            }
+
+            var propertyType = propertyExpression.Type;
+            if (propertyType == null)
+                throw new Exception($"Invalid PropertyName: {filterDTO.PropertyName}");
+
+            object startValue = null, endValue = null;
+
+            if (filterDTO.Range && !string.IsNullOrEmpty(filterDTO.PropertyValue))
+            {
+                var rangeValues = filterDTO.PropertyValue.Split(',');
+                if (rangeValues.Length == 2)
+                {
+                    startValue = ProcessValue(rangeValues[0], propertyType);
+                    endValue = ProcessValue(rangeValues[1], propertyType);
+
+                    var startConstant = Expression.Constant(startValue, propertyType);
+                    var endConstant = Expression.Constant(endValue, propertyType);
+
+                    var startPredicate = Expression.GreaterThanOrEqual(propertyExpression, startConstant);
+                    var endPredicate = Expression.LessThanOrEqual(propertyExpression, endConstant);
+
+                    var combinedPredicate = Expression.AndAlso(startPredicate, endPredicate);
+                    var lambda = Expression.Lambda<Func<T, bool>>(combinedPredicate, parameter);
+
+                    query = query.Where(lambda);
+                }
+                else
+                {
+                    throw new Exception("Range filter requires two values separated by a comma.");
+                }
+            }
+            else
+            {
+                var convertedValue = ProcessValue(filterDTO.PropertyValue, propertyType);
+
+                var constant = Expression.Constant(convertedValue, propertyType);
+                var predicate = Expression.Equal(propertyExpression, constant);
+                var lambda = Expression.Lambda<Func<T, bool>>(predicate, parameter);
+
+                query = query.Where(lambda);
+
+                //var convertedValue = ConvertToType(filterDTO.PropertyValue, propertyType);
+                // var constant = Expression.Constant(convertedValue, propertyType);
+                // var predicate = Expression.Equal(propertyExpression, constant);
+                // var lambda = Expression.Lambda<Func<T, bool>>(predicate, parameter);
+
+                // // Apply filter to the query
+                // query = query.Where(lambda);
+
+
+
+            }
+        }
+
+        if (includeProperties != null)
+        {
+            foreach (var prop in includeProperties)
+            {
+                foreach (var item in prop.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                    query = query.Include(item);
+            }
+        }
+
+        if (thenIncludeProperties != null)
+        {
+            foreach (var includeProperty in thenIncludeProperties)
+            {
+                query = ApplyThenInclude(query, includeProperty.Key, includeProperty.Value);
+            }
+        }
+
+        if (!query.Any())
+            throw new Exception("Didn't find any data");
+
+        var items = await PagedList<T>.CreateAsync(query, userParams.PageNumber, userParams.PageSize);
+        var totalCount = await query.CountAsync();
+
+        var paginationRequests = query
+            .Select(item => new PaginationRequest<T>
+            {
+                Data = item,
+                Count = totalCount
+            });
+
+        return await PagedList<PaginationRequest<T>>.CreateAsync(paginationRequests, userParams.PageNumber, userParams.PageSize);
+    }
+    private static IQueryable<T> ApplyThenInclude(IQueryable<T> query, string propertyName, List<string> thenIncludeProperties)
+    {
+        foreach (var thenIncludeProperty in thenIncludeProperties)
+        {
+            query = query.Include($"{propertyName}.{thenIncludeProperty}");
+        }
+        return query;
+    }
+
+    private static object ProcessValue(string value, Type targetType)
+    {
+        if (string.IsNullOrEmpty(value))
+            throw new ArgumentException("Value cannot be null or empty.", nameof(value));
+
+        //if (Nullable.GetUnderlyingType(targetType) != null)
+        //{
+        //    var underlyingType = Nullable.GetUnderlyingType(targetType);
+
+        //    if (string.IsNullOrWhiteSpace(value))
+        //        return null;
+
+        //    return Convert.ChangeType(value, underlyingType!);
+        //}
+
+        if (targetType == typeof(DateTime) || targetType == typeof(DateTime?))
+        {
+            if (DateTime.TryParse(value, out var dateValue))
+            {
+                return dateValue.Kind == DateTimeKind.Utc ? dateValue : dateValue.ToUniversalTime();
+            }
+            throw new Exception("Invalid date format.");
+        }
+
+        if (targetType == typeof(DateOnly) || targetType == typeof(DateOnly?))
+        {
+            if (DateOnly.TryParse(value, out var dateOnlyValue))
+            {
+                return dateOnlyValue;
+            }
+            throw new Exception("Invalid date format.");
+        }
+
+        return Convert.ChangeType(value, targetType);
+    }
+
+
+
+
+
+    #endregion
 
 }

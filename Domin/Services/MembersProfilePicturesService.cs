@@ -11,14 +11,14 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using static Domain.DTOs.ImageMemberAndMembRefDto;
+using static Domain.DTOs.MembersProfilePicturesDto;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace Domain.Services
 {
-    public class ImageMemberAndMembRefService(IRepository<ImegesMemberAndMemRef> _ImageReposatory ,IMapper _mapper , IChangeLogService _changeLogService) : IImageMemberAndMembRefService
+    public class MembersProfilePicturesService(IRepository<MembersProfilePictures> _ImageReposatory ,IMapper _mapper , IChangeLogService _changeLogService) : IMembersProfilePicturesService
     {
-        public async Task<ImageResult> CreateAsync(ImageMemberAndMembRefDto imageDto)
+        public async Task<ImageResult> CreateAsync(MembersProfilePicturesDto imageDto)
         {
             var result = new ImageResult();
             if (imageDto.Image != null && imageDto.Image.Length > 0)
@@ -28,7 +28,7 @@ namespace Domain.Services
                 {
                     await imageDto.Image.CopyToAsync(stream);
 
-                    var Images = new ImegesMemberAndMemRef
+                    var Images = new MembersProfilePictures
                     {
                         Name = imageDto.Image.FileName,
                         ImageExtension = Path.GetExtension(imageDto.Image.FileName),
@@ -40,11 +40,11 @@ namespace Domain.Services
                     _changeLogService.SetCreateChangeLogInfo(Images);
                     await _ImageReposatory.AddAsync(Images);
                     imageDto.Id = Images.id;
-                   // imageDto.Base64Image = Convert.ToBase64String(Images.Image);
+                    imageDto.Base64Image = Convert.ToBase64String(Images.Image);
                 }
             }
             result.Image = imageDto;
-            result.SuccessMessage = MessageEnum.Created(typeof(ImegesMemberAndMemRef).Name);
+            result.SuccessMessage = MessageEnum.Created(typeof(MembersProfilePictures).Name);
             result.StatusCode = HttpStatusCode.Created;
             return result;
         }
@@ -57,7 +57,7 @@ namespace Domain.Services
                 return Helper.Helper.CreateErrorResult<ImageResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("Image"));
             imeges.IsDeleted = true;
             await _ImageReposatory.UpdateAsync(imeges);
-            result.SuccessMessage = MessageEnum.Deleted(typeof(ImegesMemberAndMemRef).Name);
+            result.SuccessMessage = MessageEnum.Deleted(typeof(MembersProfilePictures).Name);
             result.StatusCode = HttpStatusCode.OK;
             return result;
         }
@@ -68,19 +68,19 @@ namespace Domain.Services
             var Image = await _ImageReposatory.GetByIdAsync(id);
             if (Image == null)
                 return Helper.Helper.CreateErrorResult<GetImageResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("Image"));
-            var imageDto = new GetImagMamberAndMembRefDto
+            var imageDto = new GetMembersProfilePicturesDto
             {
                 Id = Image.id,
                 Base64Image = Convert.ToBase64String(Image.Image ?? new byte[0]),
             };
 
             result.GetImag = imageDto;
-            result.SuccessMessage = MessageEnum.Getted(typeof(ImegesMemberAndMemRef).Name);
+            result.SuccessMessage = MessageEnum.Getted(typeof(MembersProfilePictures).Name);
             result.StatusCode = HttpStatusCode.OK;
             return result;
         }
 
-        public async Task<ImageResult> UpdateAsync(int id, ImageMemberAndMembRefDto imageDto)
+        public async Task<ImageResult> UpdateAsync(int id, MembersProfilePicturesDto imageDto)
         {
             var result = new ImageResult();
             var imeges = await _ImageReposatory.GetByIdAsync(id);
@@ -94,7 +94,7 @@ namespace Domain.Services
                 {
                     await imageDto.Image.CopyToAsync(stream);
 
-                    var Images = new ImegesMemberAndMemRef
+                    var Images = new MembersProfilePictures
                     {
                         Name = imageDto.Image.Name,
                         ImageExtension = Path.GetExtension(imageDto.Image.FileName),
@@ -104,10 +104,11 @@ namespace Domain.Services
                     };
                     _changeLogService.SetCreateChangeLogInfo(Images);
                     await _ImageReposatory.UpdateAsync(Images);
+                    imageDto.Base64Image = Convert.ToBase64String(Images.Image);
                 }
             }
             result.Image = imageDto;
-            result.SuccessMessage = MessageEnum.Updated(typeof(ImegesMemberAndMemRef).Name);
+            result.SuccessMessage = MessageEnum.Updated(typeof(MembersProfilePictures).Name);
             result.StatusCode = HttpStatusCode.OK;
             return result;
         }

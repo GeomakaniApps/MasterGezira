@@ -28,8 +28,11 @@ public static class ApplicationExtensions
         services.AddScoped<IQualificationService, QualificationService>();
         services.AddScoped<IReferenceService, ReferenceService>();
         services.AddScoped<IMemberService, MemberService>();
-        services.AddScoped<IImageMemberAndMembRefService, ImageMemberAndMembRefService>();
+        services.AddScoped<IMembersProfilePicturesService, MembersProfilePicturesService>();
+        services.AddScoped<IMembersAttachmentService, MembersAttachmentService>();
         services.AddScoped<IChangeLogService, ChangeLogService>();
+        services.AddScoped<IMemberRefService, MemberRefService>();
+
         services.AddScoped<ILateFeesService, LateFeesService>();
         services.AddScoped<ITransactionTypeService, TransactionTypeService>();
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));

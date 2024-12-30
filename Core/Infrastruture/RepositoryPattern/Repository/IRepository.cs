@@ -1,4 +1,5 @@
 ﻿using DataLayer.Helpers;
+using DataLayer.Services.Pagination;
 using System.Linq.Expressions;
 
 namespace Core.Infrastruture.RepositoryPattern.Repository;
@@ -16,6 +17,7 @@ public interface IRepository<T>
     Task<ICollection<T>> GetAllAsync();
 
     Task<ICollection<T>> GetAllAsync(string includeProperties = "");
+    Task<T> GetByIdAsync(object id, string includeProperties = "");
 
     T GetById(int id);
 
@@ -78,5 +80,7 @@ public interface IRepository<T>
     void UpdateRange(IEnumerable<T> entities);
     Task UpdateRangeAsync(IEnumerable<T> entities);
     Task<T> FindLastAsync(string propertyName);
+    Task<PagedList<PaginationRequest<T>>> FilterAll(List<FilterDTO> filterDTOs, UserParams userParams, List<string>? includeProperties = null, Dictionary<string, List<string>>? thenIncludeProperties = null);
+    Task<bool> ValidateExistenceAsync(Expression<Func<T, bool>> predicate);
 
 }

@@ -13,12 +13,13 @@ using System.Threading.Tasks;
 
 namespace Domain.Services
 {
-    public class LateFeesService(IRepository<LateFees> _lateFeesRepository,IMapper _mapper) : ILateFeesService
+    public class LateFeesService(IRepository<LateFees> _lateFeesRepository,IMapper _mapper , IChangeLogService _changeLogService) : ILateFeesService
     {
         public async Task<LateFeesResult> CreateAsync(LateFeesDto lateFeesDto)
         {
             var result = new LateFeesResult();
             LateFees lateFees = _mapper.Map<LateFees>(lateFeesDto);
+            _changeLogService.SetCreateChangeLogInfo(lateFees);
             await _lateFeesRepository.AddAsync(lateFees);
             result.LateFees = lateFeesDto;
             result.SuccessMessage = MessageEnum.Created(typeof(LateFees).Name);
@@ -35,6 +36,7 @@ namespace Domain.Services
             if (lateFee.IsDeleted==true)
                 return Helper.Helper.CreateErrorResult<LateFeesResult>(HttpStatusCode.BadRequest, "Late fee is already deleted");
             lateFee.IsDeleted = true;
+            _changeLogService.SetDeleteChangeLogInfo(lateFee);
             await _lateFeesRepository.UpdateAsync(lateFee);
             result.SuccessMessage = MessageEnum.Deleted(typeof(LateFees).Name);
             result.StatusCode = HttpStatusCode.OK;
@@ -75,6 +77,7 @@ namespace Domain.Services
                 return Helper.Helper.CreateErrorResult<LateFeesResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("late fees"));
 
             _mapper.Map(lateFeeDto, lateFee);
+            _changeLogService.SetUpdateChangeLogInfo(lateFee);
             await _lateFeesRepository.UpdateAsync(lateFee);
             result.LateFees = lateFeeDto;
             result.SuccessMessage= MessageEnum.Updated(typeof(LateFees).Name);

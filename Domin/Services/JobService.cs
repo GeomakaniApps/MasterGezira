@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Services
 {
-    public class JobService(IRepository<Job> _jobRepository,IMapper _mapper):IJobService
+    public class JobService(IRepository<Job> _jobRepository,IMapper _mapper ,IChangeLogService _changeLogService):IJobService
     {
         public async Task<JobResult> CreateAsync(JobDto jobDto)
         {
@@ -21,6 +21,7 @@ namespace Domain.Services
             if (_jobRepository.Find(n => n.Name.ToLower() == jobDto.Name.ToLower()) != null)
                 return Helper.Helper.CreateErrorResult<JobResult>(HttpStatusCode.BadRequest, ErrorEnum.Existed("Job"));
             Job job = _mapper.Map<Job>(jobDto);
+            _changeLogService.SetCreateChangeLogInfo(job);
             await _jobRepository.AddAsync(job);
             result.Job = jobDto;
             result.SuccessMessage = MessageEnum.Created(typeof(Area).Name);
@@ -34,7 +35,12 @@ namespace Domain.Services
             var job = await _jobRepository.GetByIdAsync(id);
             if (job == null)
                 return Helper.Helper.CreateErrorResult<JobResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("Job"));
-            await _jobRepository.DeleteAsync(job);
+            if (job.IsDeleted == true)
+                return Helper.Helper.CreateErrorResult<JobResult>(HttpStatusCode.BadRequest, "Job Already Deleted");
+
+            job.IsDeleted = true;
+            _changeLogService.SetDeleteChangeLogInfo(job);
+            await _jobRepository.UpdateAsync(job);
             result.SuccessMessage = MessageEnum.Deleted(typeof(Job).Name);
             result.StatusCode = HttpStatusCode.OK;
             return result;
@@ -73,6 +79,7 @@ namespace Domain.Services
             if (job == null)
                 return Helper.Helper.CreateErrorResult<JobResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("Job"));
             _mapper.Map(jobDto, job);
+            _changeLogService.SetUpdateChangeLogInfo(job);
             await _jobRepository.UpdateAsync(job);
             result.Job = jobDto;
             result.SuccessMessage = MessageEnum.Updated(typeof(Job).Name);

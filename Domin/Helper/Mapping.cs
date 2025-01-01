@@ -72,6 +72,8 @@ namespace Domain.Helper
                 .ForMember(dest => dest.ImageId, opt => opt.Ignore())
              //   .ForMember(dest => dest.Image, opt => opt.Ignore())
                 .ForMember(dest => dest.JoinDate, opt => opt.Ignore());
+            CreateMap<Member, Member>();
+            CreateMap<Area, Area>();
 
         }
     }

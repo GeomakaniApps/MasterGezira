@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Services
 {
-    public class QualificationService(IRepository<Qualification> _QualificationRepository, IMapper _mapper) : IQualificationService
+    public class QualificationService(IRepository<Qualification> _QualificationRepository, IMapper _mapper , IChangeLogService _changeLogService) : IQualificationService
     {
         public async Task<QualificationResult> CreateAsync(QualificationDto qualificationDto)
         {
@@ -21,6 +21,7 @@ namespace Domain.Services
             if (_QualificationRepository.Find(n => n.Name.ToLower() == qualificationDto.Name.ToLower()) != null)
                 return Helper.Helper.CreateErrorResult<QualificationResult>(HttpStatusCode.BadRequest, ErrorEnum.Existed("Qualification"));
             Qualification Qualification = _mapper.Map<Qualification>(qualificationDto);
+            _changeLogService.SetCreateChangeLogInfo(Qualification);
             await _QualificationRepository.AddAsync(Qualification);
             result.Qualification = qualificationDto;
             result.SuccessMessage = MessageEnum.Created(typeof(Qualification).Name);
@@ -34,7 +35,12 @@ namespace Domain.Services
             var Qualification = await _QualificationRepository.GetByIdAsync(id);
             if (Qualification == null)
                 return Helper.Helper.CreateErrorResult<QualificationResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("Qualification"));
-            await _QualificationRepository.DeleteAsync(Qualification);
+            if (Qualification.IsDeleted == true)
+                return Helper.Helper.CreateErrorResult<QualificationResult>(HttpStatusCode.BadRequest, "Qualification Already Deleted");
+
+            Qualification.IsDeleted = true;
+            _changeLogService.SetDeleteChangeLogInfo(Qualification);
+            await _QualificationRepository.UpdateAsync(Qualification);
             result.SuccessMessage = MessageEnum.Deleted(typeof(Qualification).Name);
             result.StatusCode = HttpStatusCode.OK;
             return result;
@@ -76,6 +82,7 @@ namespace Domain.Services
             if (isDuplacateName != null)
                 return Helper.Helper.CreateErrorResult<QualificationResult>(HttpStatusCode.Conflict, ErrorEnum.Existed("Qualification"));
             _mapper.Map(qualificationDto, Qualification);
+            _changeLogService.SetUpdateChangeLogInfo(Qualification);
             await _QualificationRepository.UpdateAsync(Qualification);
             result.Qualification = qualificationDto;
             result.SuccessMessage = MessageEnum.Updated(typeof(Qualification).Name);

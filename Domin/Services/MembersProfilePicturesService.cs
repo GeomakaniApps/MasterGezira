@@ -30,12 +30,12 @@ namespace Domain.Services
 
                     var Images = new MembersProfilePictures
                     {
-                        Name = imageDto.Image.FileName,
+                        Name = Path.GetFileNameWithoutExtension(imageDto.Image.FileName),
                         ImageExtension = Path.GetExtension(imageDto.Image.FileName),
                         Image = stream.ToArray(),
                         //UploadedAt = DateTime.UtcNow,
-                        memberId = imageDto.memberId,
-                        memberRefId = imageDto.memberRefId
+                        MemberId = imageDto.memberId,
+                        MemberRefId = imageDto.memberRefId
                     };
                     _changeLogService.SetCreateChangeLogInfo(Images);
                     await _ImageReposatory.AddAsync(Images);

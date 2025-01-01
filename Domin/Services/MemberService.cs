@@ -18,7 +18,7 @@ using DataLayer.Services.Pagination;
 
 namespace Domain.Services
 {
-    public class MemberService(IRepository<Member> _memberReposatory,IMembersProfilePicturesService _ImageService, IMapper _mapper, IChangeLogService _changeLogService , IMembersAttachmentService _attachmentService) : IMemberService
+    public class MemberService(IRepository<Member> _memberReposatory,IMembersProfilePicturesService _ImageService, IMapper _mapper, IChangeLogService _changeLogService , IMembersAttachmentService _attachmentService ,IHistoryLogService _historyLogService) : IMemberService
     {
         public async Task<MemberResult> CreateAsync(MemberDto memberDto)
         {
@@ -195,6 +195,9 @@ namespace Domain.Services
             var member = await _memberReposatory.GetByIdAsync(id , includeProperties:prop);
             if (member == null)
                 return Helper.Helper.CreateErrorResult<MemberResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("Member"));
+            //   var oldMember = await _memberReposatory.GetByIdAsync(id, includeProperties: prop);
+            var oldMember = new Member();
+            _mapper.Map(member, oldMember);
             if (member.IsDeleted == true)
                 return Helper.Helper.CreateErrorResult<MemberResult>(HttpStatusCode.BadRequest, "Member already Deleted");
             var existingMember = _memberReposatory.Find(n => n.Name.ToLower() == memberDto.Name.ToLower() && n.Id != id);
@@ -235,6 +238,7 @@ namespace Domain.Services
 
             }
 
+            await _historyLogService.CompareAndLogMemberChanges(member, oldMember,  actionOwner: (int)member.UpdateBy);
 
             result.Member = memberDto;
             result.SuccessMessage = MessageEnum.Updated(typeof(Member).Name);

@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Services
 {
-    public class MemberTypeService(IRepository<MemberType> _memberTyperepository , IMapper _mapper) : IMemberTypeService
+    public class MemberTypeService(IRepository<MemberType> _memberTyperepository , IMapper _mapper , IChangeLogService _changeLogService) : IMemberTypeService
     {
         public async Task<MemberTypeResult> CreateAsync(MemberTypeDto memberTypeDto)
         {
@@ -22,6 +22,7 @@ namespace Domain.Services
             if (_memberTyperepository.Find(n => n.Name.ToLower() == memberTypeDto.Name.ToLower()) !=null)
                 return Helper.Helper.CreateErrorResult<MemberTypeResult>(HttpStatusCode.BadRequest, ErrorEnum.Existed("memberType"));
             var memberType = _mapper.Map<MemberType>(memberTypeDto);
+            _changeLogService.SetCreateChangeLogInfo(memberType);
             await _memberTyperepository.AddAsync(memberType);
             result.MemberType = memberTypeDto;
             result.SuccessMessage = MessageEnum.Created(typeof(MemberType).Name);
@@ -38,6 +39,7 @@ namespace Domain.Services
             if (memberType.IsDeleted == true)
                 return Helper.Helper.CreateErrorResult<MemberTypeResult>(HttpStatusCode.BadRequest,"Member Type already deleted");
             memberType.IsDeleted = true;  
+            _changeLogService.SetDeleteChangeLogInfo(memberType);
              await _memberTyperepository.UpdateAsync(memberType);
              result.SuccessMessage = MessageEnum.Deleted(typeof(Transformation).Name);
             return result;
@@ -89,6 +91,7 @@ namespace Domain.Services
             if (isDuplicateName != null)
                 return Helper.Helper.CreateErrorResult<MemberTypeResult>(HttpStatusCode.Conflict, ErrorEnum.Existed("MemberType"));
             _mapper.Map(memberTypeDto, memberType);
+            _changeLogService.SetUpdateChangeLogInfo(memberType);
             await _memberTyperepository.UpdateAsync(memberType);
             result.MemberType = memberTypeDto;
             result.SuccessMessage = MessageEnum.Updated(typeof(MemberType).Name);

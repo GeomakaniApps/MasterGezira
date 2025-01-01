@@ -79,8 +79,12 @@ public class MemberRefService(IRepository<MembersRef> _memberRefRepository, IRep
         var memberRef = await _memberRefRepository.GetByIdAsync(id);
         if (memberRef == null)
             return Helper.Helper.CreateErrorResult<MemberRefResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("MemberRef"));
+        if (memberRef.IsDeleted == true)
+            return Helper.Helper.CreateErrorResult<MemberRefResult>(HttpStatusCode.BadRequest, "Member reference Already Deleted");
 
-        await _memberRefRepository.DeleteAsync(memberRef);
+        memberRef.IsDeleted = true;
+        _changeLogService.SetDeleteChangeLogInfo(memberRef);
+        await _memberRefRepository.UpdateAsync(memberRef);
         result.SuccessMessage = MessageEnum.Deleted(typeof(MembersRef).Name);
         result.StatusCode = HttpStatusCode.OK;
 
@@ -112,6 +116,7 @@ public class MemberRefService(IRepository<MembersRef> _memberRefRepository, IRep
             return Helper.Helper.CreateErrorResult<MemberRefResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("MemberRef"));
 
         _mapper.Map(memberRefDto, memberRef);
+        _changeLogService.SetUpdateChangeLogInfo(memberRef);
         await _memberRefRepository.UpdateAsync(memberRef);
 
         result.MemberRef = memberRefDto;

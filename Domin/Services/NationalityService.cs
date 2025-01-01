@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Services
 {
-    public class NationalityService(IRepository<Nationality> _NationalityReposatory, IMapper _mapper) : INationalityService
+    public class NationalityService(IRepository<Nationality> _NationalityReposatory, IMapper _mapper , IChangeLogService _changeLogService) : INationalityService
     {
         public async Task<NationalityResult> CreateAsync(NationalityDto nationalityDto)
         {
@@ -22,6 +22,7 @@ namespace Domain.Services
                 return Helper.Helper.CreateErrorResult<NationalityResult>(HttpStatusCode.BadRequest, ErrorEnum.Existed("Nationality"));
 
             var nationality = _mapper.Map<Nationality>(nationalityDto);
+            _changeLogService.SetCreateChangeLogInfo(nationality);
           await _NationalityReposatory.AddAsync(nationality);
             result.Nationality = nationalityDto;
             result.SuccessMessage = MessageEnum.Created(typeof(Nationality).Name);
@@ -34,7 +35,12 @@ namespace Domain.Services
             var nationality = await _NationalityReposatory.GetByIdAsync(id);
             if (nationality == null)
                 return Helper.Helper.CreateErrorResult<NationalityResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("Nationality"));
-            await _NationalityReposatory.DeleteAsync(nationality);
+            if (nationality.IsDeleted == true)
+                return Helper.Helper.CreateErrorResult<NationalityResult>(HttpStatusCode.BadRequest, "Nationality Already Deleted");
+
+            nationality.IsDeleted = true;
+            _changeLogService.SetDeleteChangeLogInfo(nationality);
+            await _NationalityReposatory.UpdateAsync(nationality);
             result.SuccessMessage = MessageEnum.Deleted(typeof(Nationality).Name);
             result.StatusCode = HttpStatusCode.OK;
             return result;
@@ -75,6 +81,7 @@ namespace Domain.Services
             if (isDuplicateName != null)
                 return Helper.Helper.CreateErrorResult<NationalityResult>(HttpStatusCode.Conflict, ErrorEnum.Existed("nationality"));
             _mapper.Map(nationalityDto ,nationality);
+            _changeLogService.SetUpdateChangeLogInfo(nationality);
             await _NationalityReposatory.UpdateAsync(nationality);
             result.Nationality = nationalityDto;
             result.SuccessMessage = MessageEnum.Updated(typeof(Nationality).Name);

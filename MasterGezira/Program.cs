@@ -30,11 +30,6 @@ namespace MasterGezira
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
 
             });
-            //builder.Services.AddDbContext<MasterDBContext>(options =>
-            //{
-            //    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
-            //           .ConfigureWarnings(warnings => warnings.Ignore(RelationalEventId.PendingModelChangesWarning));
-            //});
             #endregion
             // Add services to the container.
             #region ActionFilters

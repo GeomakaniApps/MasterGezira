@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Services
 {
-    public class AreaService(IRepository<Area> _areaRepository,IMapper _mapper) : IAreaService
+    public class AreaService(IRepository<Area> _areaRepository,IMapper _mapper , IHistoryLogService _historyLogService , IChangeLogService _changeLogService) : IAreaService
     {
         public async Task<AreaResult> CreateAsync(AreaDto areaDto)
         {
@@ -22,6 +22,7 @@ namespace Domain.Services
             if(_areaRepository.Find(n=>n.Name.ToLower()==areaDto.Name.ToLower())!=null)
                 return Helper.Helper.CreateErrorResult<AreaResult>(HttpStatusCode.BadRequest,ErrorEnum.Existed("Area"));
             Area area =_mapper.Map<Area>(areaDto);
+            _changeLogService.SetCreateChangeLogInfo(area);
            await _areaRepository.AddAsync(area);
            result.Area = areaDto;
            result.SuccessMessage = MessageEnum.Created(typeof(Area).Name);
@@ -35,7 +36,12 @@ namespace Domain.Services
             var area = await _areaRepository.GetByIdAsync(id);
             if (area == null)
                 return Helper.Helper.CreateErrorResult<AreaResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("Area"));
-            await _areaRepository.DeleteAsync(area);
+            if (area.IsDeleted == true)
+                return Helper.Helper.CreateErrorResult<AreaResult>(HttpStatusCode.BadRequest, "Area Already Deleted");
+          
+            area.IsDeleted  = true;
+            _changeLogService.SetDeleteChangeLogInfo(area);
+            await _areaRepository.UpdateAsync(area);
             result.SuccessMessage=MessageEnum.Deleted(typeof(Area).Name);
             result.StatusCode = HttpStatusCode.OK;
             return result;
@@ -71,10 +77,14 @@ namespace Domain.Services
         {
             var result = new AreaResult();
             var area = await _areaRepository.GetByIdAsync(id);
+            var OldArea = new Area();
+            _mapper.Map( area,OldArea);
             if (area == null)
                 return Helper.Helper.CreateErrorResult<AreaResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("Area"));
            _mapper.Map(areaDto, area);
+            _changeLogService.SetUpdateChangeLogInfo(area);
            await _areaRepository.UpdateAsync(area);
+            await _historyLogService.CompareAndLogAreaChanges(area, OldArea, 1);
            result.Area = areaDto;
            result.SuccessMessage = MessageEnum.Updated(typeof(Area).Name);
            result.StatusCode = HttpStatusCode.OK;

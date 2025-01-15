@@ -14,7 +14,11 @@ using static Domain.DTOs.MemberRefDto;
 
 namespace Domain.Services;
 
-public class MemberRefService(IRepository<MembersRef> _memberRefRepository, IRepository<Member> _memberRepository, IRepository<Reference> _referenceRepository, IRepository<Section> _sectionRepository, IMembersProfilePicturesService _imageService, IMapper _mapper, IChangeLogService _changeLogService) : IMemberRefService
+public class MemberRefService(IRepository<MembersRef> _memberRefRepository
+    , IRepository<Member> _memberRepository, IRepository<Reference> _referenceRepository
+    , IRepository<Section> _sectionRepository, IMembersProfilePicturesService _imageService
+    , IMapper _mapper, IChangeLogService _changeLogService
+    ,IRepository<ArchiveMembersRef> _archiveMembersRefRepository) : IMemberRefService
 {
 
 
@@ -73,17 +77,21 @@ public class MemberRefService(IRepository<MembersRef> _memberRefRepository, IRep
     }
 
 
-    public async Task<MemberRefResult> DeleteAsync(int id)
+    public async Task<MemberRefResult> DeleteAsync(int id,string deletionReason)
     {
         var result = new MemberRefResult();
         var memberRef = await _memberRefRepository.GetByIdAsync(id);
         if (memberRef == null)
             return Helper.Helper.CreateErrorResult<MemberRefResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("MemberRef"));
-
+        ArchiveMembersRef archiveMembersRef = _mapper.Map<ArchiveMembersRef>(memberRef);
+        archiveMembersRef.Id = 0; // Let the database generate a new Id
+        archiveMembersRef.DeletionReason = deletionReason;
+        archiveMembersRef.Archived = true;
+        _changeLogService.SetDeleteChangeLogInfo(archiveMembersRef);
+        await _archiveMembersRefRepository.AddAsync(archiveMembersRef);
         await _memberRefRepository.DeleteAsync(memberRef);
         result.SuccessMessage = MessageEnum.Deleted(typeof(MembersRef).Name);
         result.StatusCode = HttpStatusCode.OK;
-
         return result;
     }
 
@@ -101,6 +109,27 @@ public class MemberRefService(IRepository<MembersRef> _memberRefRepository, IRep
         result.SuccessMessage = MessageEnum.Getted(typeof(MembersRef).Name);
         result.StatusCode = HttpStatusCode.OK;
 
+        return result;
+    }
+
+    public async Task<MemberRefResult> UnArchiveAsync(int id)
+    {
+        var result = new MemberRefResult();
+        var archivedMemberRef =await _archiveMembersRefRepository.GetByIdAsync(id);
+        if (archivedMemberRef == null)
+            return Helper.Helper.CreateErrorResult<MemberRefResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("MemberRef"));
+        if (archivedMemberRef.Archived == false)
+            return Helper.Helper.CreateErrorResult<MemberRefResult>(HttpStatusCode.BadRequest,"This member refrence is already not archived");
+        var member=await _memberRepository.FindAsync(m => m.MemberCode == archivedMemberRef.MemberCode);
+        if (member == null)
+            return Helper.Helper.CreateErrorResult<MemberRefResult>(HttpStatusCode.NotFound, "Didn't find the member that member ref connected with it make sure the member didn't deleted.");
+        var memberRef = _mapper.Map<MembersRef>(archivedMemberRef);
+        memberRef.Id = 0; // Let the database generate a new Id
+        _changeLogService.SetUnArchivedChangeLogInfo(memberRef);
+        await _memberRefRepository.AddAsync(memberRef);
+        archivedMemberRef.Archived = false;
+        await _archiveMembersRefRepository.UpdateAsync(archivedMemberRef);
+        result.SuccessMessage = "Member ref returned successfully";
         return result;
     }
 

@@ -3,6 +3,7 @@ using System;
 using DataLayer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataLayer.Migrations
 {
     [DbContext(typeof(MasterDBContext))]
-    partial class MasterDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250101114333_RemoveIsDeletedFromMemberModelAndChangeDeletedByAndAtToUnArchivedByAndAt")]
+    partial class RemoveIsDeletedFromMemberModelAndChangeDeletedByAndAtToUnArchivedByAndAt
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -328,6 +331,8 @@ namespace DataLayer.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ImageId");
+
+                    b.HasIndex("MemberCode");
 
                     b.HasIndex("ReferenceId");
 
@@ -1035,6 +1040,13 @@ namespace DataLayer.Migrations
                         .WithMany()
                         .HasForeignKey("ImageId");
 
+                    b.HasOne("DataLayer.Models.Member", "Member")
+                        .WithMany()
+                        .HasForeignKey("MemberCode")
+                        .HasPrincipalKey("MemberCode")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("DataLayer.Models.Reference", "Reference")
                         .WithMany()
                         .HasForeignKey("ReferenceId")
@@ -1046,6 +1058,8 @@ namespace DataLayer.Migrations
                         .HasForeignKey("SectionId");
 
                     b.Navigation("Image");
+
+                    b.Navigation("Member");
 
                     b.Navigation("Reference");
 

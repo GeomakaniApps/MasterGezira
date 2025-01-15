@@ -18,6 +18,7 @@ namespace Domain.Interfaces
         Task<MemberResult> CreateAsync(MemberDto memberDto);
         Task<MemberResult> UpdateAsync(int id, MemberDto memberDto);
         Task<GetMemberResult> Filter(List<FilterDTO> filterDTOs, UserParams userParams);
-        Task<MemberResult> DeleteAsync(int id);
+        Task<MemberResult> DeleteAsync(int id, string deletionReason);
+        Task<MemberResult> UnArchiveAsync(int id);
         }
 }

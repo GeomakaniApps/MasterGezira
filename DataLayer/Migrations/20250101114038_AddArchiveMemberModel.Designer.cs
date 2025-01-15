@@ -3,6 +3,7 @@ using System;
 using DataLayer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataLayer.Migrations
 {
     [DbContext(typeof(MasterDBContext))]
-    partial class MasterDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250101114038_AddArchiveMemberModel")]
+    partial class AddArchiveMemberModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -329,6 +332,8 @@ namespace DataLayer.Migrations
 
                     b.HasIndex("ImageId");
 
+                    b.HasIndex("MemberCode");
+
                     b.HasIndex("ReferenceId");
 
                     b.HasIndex("SectionId");
@@ -438,7 +443,16 @@ namespace DataLayer.Migrations
                     b.Property<int?>("CreateBy")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime?>("DeleteAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("DeleteBy")
+                        .HasColumnType("integer");
+
                     b.Property<bool?>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
                     b.Property<string>("JobAddress")
@@ -499,12 +513,6 @@ namespace DataLayer.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<int?>("TransformationId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("UnArchivedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("UnArchivedBy")
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("UpdateAt")
@@ -1035,6 +1043,13 @@ namespace DataLayer.Migrations
                         .WithMany()
                         .HasForeignKey("ImageId");
 
+                    b.HasOne("DataLayer.Models.Member", "Member")
+                        .WithMany()
+                        .HasForeignKey("MemberCode")
+                        .HasPrincipalKey("MemberCode")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("DataLayer.Models.Reference", "Reference")
                         .WithMany()
                         .HasForeignKey("ReferenceId")
@@ -1046,6 +1061,8 @@ namespace DataLayer.Migrations
                         .HasForeignKey("SectionId");
 
                     b.Navigation("Image");
+
+                    b.Navigation("Member");
 
                     b.Navigation("Reference");
 

@@ -79,6 +79,23 @@ namespace Domain.Services
                 CancelAtProperty.SetValue(entity, DateTime.UtcNow);
             }
         }
+        public void SetUnArchivedChangeLogInfo<T>(T entity) where T : class
+        {
+            var userName = GetUserId();
+            var UserId = Convert.ToInt32(userName);
+            var CancelByProperty = entity.GetType().GetProperty("UnArchivedBy");
+            var CancelAtProperty = entity.GetType().GetProperty("UnArchivedAt");
+
+            if (CancelByProperty != null)
+            {
+                CancelByProperty.SetValue(entity, UserId);
+            }
+
+            if (CancelAtProperty != null)
+            {
+                CancelAtProperty.SetValue(entity, DateTime.UtcNow);
+            }
+        }
     }
 }
 

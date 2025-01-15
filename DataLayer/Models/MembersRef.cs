@@ -23,10 +23,9 @@ public class MembersRef : Entity
     public DateTime? CreateAt { get; set; }
     public int? UpdateBy { get; set; }
     public DateTime? UpdateAt { get; set; }
-    public int? DeleteBy { get; set; }
-    public DateTime? DeleteAt { get; set; }
-    [DefaultValue(false)]
-    public bool? IsDeleted { get; set; }
+    public int? UnArchivedBy { get; set; }
+    public DateTime? UnArchivedAt { get; set; }
+
     [DefaultValue(false)]
     public bool? Suspended { get; set; }
     public string? Remark { get; set; }

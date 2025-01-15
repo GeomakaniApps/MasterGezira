@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Services
 {
-    public class QualificationService(IRepository<Qualification> _QualificationRepository, IMapper _mapper , IChangeLogService _changeLogService) : IQualificationService
+    public class QualificationService(IRepository<Qualification> _QualificationRepository, IMapper _mapper , IChangeLogService _changeLogService , IHistoryLogService _historyLogService) : IQualificationService
     {
         public async Task<QualificationResult> CreateAsync(QualificationDto qualificationDto)
         {
@@ -76,6 +76,8 @@ namespace Domain.Services
         {
             var result = new QualificationResult();
             var Qualification = await _QualificationRepository.GetByIdAsync(id);
+            var oldQualification = new Qualification();
+            _mapper.Map(Qualification, oldQualification);
             if (Qualification == null)
                 return Helper.Helper.CreateErrorResult<QualificationResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("Qualification"));
             var isDuplacateName = await _QualificationRepository.FindAsync(n => n.Name.ToLower() == qualificationDto.Name.ToLower() && n.id != id);
@@ -84,6 +86,7 @@ namespace Domain.Services
             _mapper.Map(qualificationDto, Qualification);
             _changeLogService.SetUpdateChangeLogInfo(Qualification);
             await _QualificationRepository.UpdateAsync(Qualification);
+            await _historyLogService.CompareAndLogQualificationChanges(Qualification, oldQualification, (int)Qualification.UpdateBy);
             result.Qualification = qualificationDto;
             result.SuccessMessage = MessageEnum.Updated(typeof(Qualification).Name);
             result.StatusCode = HttpStatusCode.OK;

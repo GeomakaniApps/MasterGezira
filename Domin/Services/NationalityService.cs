@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Services
 {
-    public class NationalityService(IRepository<Nationality> _NationalityReposatory, IMapper _mapper , IChangeLogService _changeLogService) : INationalityService
+    public class NationalityService(IRepository<Nationality> _NationalityReposatory, IMapper _mapper , IChangeLogService _changeLogService , IHistoryLogService _historyLogService) : INationalityService
     {
         public async Task<NationalityResult> CreateAsync(NationalityDto nationalityDto)
         {
@@ -75,6 +75,8 @@ namespace Domain.Services
         {
             var result = new NationalityResult();
             var nationality = await _NationalityReposatory.GetByIdAsync(id);
+            var oldNationality = new Nationality();
+            _mapper.Map(nationality , oldNationality);
             if (nationality == null)
                 return Helper.Helper.CreateErrorResult<NationalityResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("nationality"));
             var isDuplicateName = _NationalityReposatory.Find(n => n.Name.ToLower() == nationalityDto.Name.ToLower() && n.Id != id);
@@ -83,6 +85,7 @@ namespace Domain.Services
             _mapper.Map(nationalityDto ,nationality);
             _changeLogService.SetUpdateChangeLogInfo(nationality);
             await _NationalityReposatory.UpdateAsync(nationality);
+            await _historyLogService.CompareAndLogNationalityChanges(nationality, oldNationality, (int)nationality.UpdateBy);
             result.Nationality = nationalityDto;
             result.SuccessMessage = MessageEnum.Updated(typeof(Nationality).Name);
             return result;

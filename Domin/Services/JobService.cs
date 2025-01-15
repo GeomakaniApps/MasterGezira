@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Services
 {
-    public class JobService(IRepository<Job> _jobRepository,IMapper _mapper ,IChangeLogService _changeLogService):IJobService
+    public class JobService(IRepository<Job> _jobRepository,IMapper _mapper ,IChangeLogService _changeLogService , IHistoryLogService _historyLogService):IJobService
     {
         public async Task<JobResult> CreateAsync(JobDto jobDto)
         {
@@ -76,11 +76,14 @@ namespace Domain.Services
         {
             var result = new JobResult();
             var job = await _jobRepository.GetByIdAsync(id);
+            var oldJob = new Job();
+            _mapper.Map(job, oldJob);
             if (job == null)
                 return Helper.Helper.CreateErrorResult<JobResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("Job"));
             _mapper.Map(jobDto, job);
             _changeLogService.SetUpdateChangeLogInfo(job);
             await _jobRepository.UpdateAsync(job);
+            await _historyLogService.CompareAndLogJobChanges(job , oldJob , (int)job.UpdateBy);
             result.Job = jobDto;
             result.SuccessMessage = MessageEnum.Updated(typeof(Job).Name);
             result.StatusCode = HttpStatusCode.OK;

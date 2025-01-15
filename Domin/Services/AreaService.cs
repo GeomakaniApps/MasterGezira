@@ -84,7 +84,7 @@ namespace Domain.Services
            _mapper.Map(areaDto, area);
             _changeLogService.SetUpdateChangeLogInfo(area);
            await _areaRepository.UpdateAsync(area);
-            await _historyLogService.CompareAndLogAreaChanges(area, OldArea, 1);
+           await _historyLogService.CompareAndLogAreaChanges(area, OldArea, (int)area.UpdateBy);
            result.Area = areaDto;
            result.SuccessMessage = MessageEnum.Updated(typeof(Area).Name);
            result.StatusCode = HttpStatusCode.OK;

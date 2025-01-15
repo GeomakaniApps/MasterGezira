@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Services
 {
-    public class MemberTypeService(IRepository<MemberType> _memberTyperepository , IMapper _mapper , IChangeLogService _changeLogService) : IMemberTypeService
+    public class MemberTypeService(IRepository<MemberType> _memberTyperepository , IMapper _mapper , IChangeLogService _changeLogService , IHistoryLogService _historyLogService) : IMemberTypeService
     {
         public async Task<MemberTypeResult> CreateAsync(MemberTypeDto memberTypeDto)
         {
@@ -85,6 +85,8 @@ namespace Domain.Services
         {
             var result = new MemberTypeResult();
             var memberType = await _memberTyperepository.GetByIdAsync(id);
+            var oldMemberType = new MemberType();   
+            _mapper.Map(memberType , oldMemberType);
             if (memberType == null)
                 return Helper.Helper.CreateErrorResult<MemberTypeResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("MemberType"));
             var isDuplicateName = _memberTyperepository.Find(t => t.Name.ToLower() == memberTypeDto.Name.ToLower() && t.id != id);
@@ -93,6 +95,7 @@ namespace Domain.Services
             _mapper.Map(memberTypeDto, memberType);
             _changeLogService.SetUpdateChangeLogInfo(memberType);
             await _memberTyperepository.UpdateAsync(memberType);
+            await _historyLogService.CompareAndLogMemberTypeChanges(memberType , oldMemberType , (int)memberType.UpdateBy);
             result.MemberType = memberTypeDto;
             result.SuccessMessage = MessageEnum.Updated(typeof(MemberType).Name);
             return result;

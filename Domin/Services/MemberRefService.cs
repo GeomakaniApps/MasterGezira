@@ -14,7 +14,7 @@ using static Domain.DTOs.MemberRefDto;
 
 namespace Domain.Services;
 
-public class MemberRefService(IRepository<MembersRef> _memberRefRepository, IRepository<Member> _memberRepository, IRepository<Reference> _referenceRepository, IRepository<Section> _sectionRepository, IMembersProfilePicturesService _imageService, IMapper _mapper, IChangeLogService _changeLogService) : IMemberRefService
+public class MemberRefService(IRepository<MembersRef> _memberRefRepository, IRepository<Member> _memberRepository, IRepository<Reference> _referenceRepository, IRepository<Section> _sectionRepository, IMembersProfilePicturesService _imageService, IMapper _mapper, IChangeLogService _changeLogService , IHistoryLogService _historyLogService) : IMemberRefService
 {
 
 
@@ -112,13 +112,15 @@ public class MemberRefService(IRepository<MembersRef> _memberRefRepository, IRep
     {
         var result = new MemberRefResult();
         var memberRef = await _memberRefRepository.GetByIdAsync(id);
+        var oldMemberRef = new MembersRef();    
+        _mapper.Map(memberRef ,oldMemberRef);
         if (memberRef == null)
             return Helper.Helper.CreateErrorResult<MemberRefResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("MemberRef"));
 
         _mapper.Map(memberRefDto, memberRef);
         _changeLogService.SetUpdateChangeLogInfo(memberRef);
         await _memberRefRepository.UpdateAsync(memberRef);
-
+        await _historyLogService.CompareAndLogMemberRefChanges(memberRef, oldMemberRef, (int)memberRef.UpdateBy);
         result.MemberRef = memberRefDto;
         result.SuccessMessage = MessageEnum.Updated(typeof(MembersRef).Name);
         result.StatusCode = HttpStatusCode.OK;

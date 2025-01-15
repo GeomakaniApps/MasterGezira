@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Services
 {
-    public class SectionService(IRepository<Section> _SectionRepository, IMapper _mapper,IRepository<MemberType> _memberTypeRepository, IRepository<Reference> _referenceRepository , IChangeLogService _changeLogService) : ISectionService
+    public class SectionService(IRepository<Section> _SectionRepository, IMapper _mapper,IRepository<MemberType> _memberTypeRepository, IRepository<Reference> _referenceRepository , IChangeLogService _changeLogService , IHistoryLogService _historyLogService) : ISectionService
     {
         public async Task<SectionResult> CreateAsync(SectionDto SectionDto)
         {
@@ -112,6 +112,7 @@ namespace Domain.Services
             Section section = _mapper.Map<Section>(SectionDto);
             _changeLogService.SetCreateChangeLogInfo(section);
             await _SectionRepository.AddAsync(section);
+            await _historyLogService.CompareAndLogSectionChanges(section, oldsection, (int)section.CreateBy);
             result.Section = SectionDto;
             result.SuccessMessage = MessageEnum.Updated(typeof(Section).Name);
             result.StatusCode = HttpStatusCode.OK;

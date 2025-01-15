@@ -73,7 +73,21 @@ namespace Domain.Helper
              //   .ForMember(dest => dest.Image, opt => opt.Ignore())
                 .ForMember(dest => dest.JoinDate, opt => opt.Ignore());
             CreateMap<Member, Member>();
-            CreateMap<Area, Area>();
+            CreateMap <Area, Area> ();
+            CreateMap<City, City>();
+            CreateMap<Job, Job>();
+            CreateMap<LateFees, LateFees>();
+            CreateMap<MemberType, MemberType>();
+            CreateMap<MembersRef, MembersRef>();
+            CreateMap<Nationality, Nationality>();
+            CreateMap<Qualification, Qualification>();
+            CreateMap<Reference, Reference>();
+            CreateMap<Section, Section>();
+            CreateMap<TransactionType, TransactionType>();
+            CreateMap<Transformation, Transformation>();
+            CreateMap<MembersProfilePictures, MembersProfilePictures>();
+            CreateMap<MembersAttachments, MembersAttachments>();
+            CreateMap<HistoryLog, GetHistoryLog>().ReverseMap();    
 
         }
     }

@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Services
 {
-    public class TransformationService(IRepository<Transformation> _transformationRepository,IMapper _mapper ,IChangeLogService _changeLogService) : ITransformationService
+    public class TransformationService(IRepository<Transformation> _transformationRepository,IMapper _mapper ,IChangeLogService _changeLogService , IHistoryLogService _historyLogService) : ITransformationService
     {
         public async Task<TransformationResult> CreateAsync(TransformationDto transformationDto)
         {
@@ -73,6 +73,8 @@ namespace Domain.Services
         {
             var result = new TransformationResult();
             var transformation = await _transformationRepository.GetByIdAsync(id);
+            var oldTransformation = new Transformation();
+            _mapper.Map(transformation, oldTransformation);
             if (transformation == null)
                 return Helper.Helper.CreateErrorResult<TransformationResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("transformation"));
             var isDuplicateName = _transformationRepository.Find(t => t.Name.ToLower() == transformationDto.Name.ToLower() && t.Id != id);
@@ -81,6 +83,7 @@ namespace Domain.Services
             _mapper.Map(transformationDto, transformation);
             _changeLogService.SetUpdateChangeLogInfo(transformation);
             await _transformationRepository.UpdateAsync(transformation);
+            await _historyLogService.CompareAndLogTransformationChanges(transformation, oldTransformation, (int)transformation.UpdateBy);
             result.Transformation = transformationDto;
             result.SuccessMessage=MessageEnum.Updated(typeof(Transformation).Name);
             return result;

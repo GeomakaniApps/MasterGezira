@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Services
 {
-    public class LateFeesService(IRepository<LateFees> _lateFeesRepository,IMapper _mapper , IChangeLogService _changeLogService) : ILateFeesService
+    public class LateFeesService(IRepository<LateFees> _lateFeesRepository,IMapper _mapper , IChangeLogService _changeLogService , IHistoryLogService _historyLogService) : ILateFeesService
     {
         public async Task<LateFeesResult> CreateAsync(LateFeesDto lateFeesDto)
         {
@@ -73,12 +73,15 @@ namespace Domain.Services
         {
             var result = new LateFeesResult();
             var lateFee = await _lateFeesRepository.GetByIdAsync(id);
+            var oldLateFee = new LateFees();
+            _mapper.Map(lateFee, oldLateFee);
             if (lateFee == null)
                 return Helper.Helper.CreateErrorResult<LateFeesResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("late fees"));
 
             _mapper.Map(lateFeeDto, lateFee);
             _changeLogService.SetUpdateChangeLogInfo(lateFee);
             await _lateFeesRepository.UpdateAsync(lateFee);
+            await  _historyLogService.CompareAndLogLateFeesChanges(lateFee, oldLateFee, (int)lateFee.UpdateBy);
             result.LateFees = lateFeeDto;
             result.SuccessMessage= MessageEnum.Updated(typeof(LateFees).Name);
             result.StatusCode = HttpStatusCode.OK;

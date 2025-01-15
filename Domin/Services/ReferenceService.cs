@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Services
 {
-    public class ReferenceService(IRepository<Reference> _ReferenceRepository , IMapper _mapper , IChangeLogService _changeLogService) : IReferenceService
+    public class ReferenceService(IRepository<Reference> _ReferenceRepository , IMapper _mapper , IChangeLogService _changeLogService , IHistoryLogService _historyLogService) : IReferenceService
     {
         public async Task<ReferenceResult> CreateAsync(ReferenceDto referenceDto)
         {
@@ -77,6 +77,8 @@ namespace Domain.Services
         {
             var result = new ReferenceResult();
             var Reference = await _ReferenceRepository.GetByIdAsync(id);
+            var OldReference = new Reference();
+            _mapper.Map(Reference, OldReference);
             if (Reference == null)
                 return Helper.Helper.CreateErrorResult<ReferenceResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("Reference"));
             var isDuplacateName = await _ReferenceRepository.FindAsync(n => n.Name.ToLower() == referenceDto.Name.ToLower() && n.Id != id);
@@ -86,6 +88,7 @@ namespace Domain.Services
             _mapper.Map(referenceDto, Reference);
             _changeLogService.SetUpdateChangeLogInfo(Reference);
             await _ReferenceRepository.UpdateAsync(Reference);
+             await _historyLogService.CompareAndLogReferenceChanges(Reference, OldReference, (int)Reference.UpdateBy);
             result.Reference = referenceDto;
             result.SuccessMessage = MessageEnum.Updated(typeof(Reference).Name);
             result.StatusCode = HttpStatusCode.OK;

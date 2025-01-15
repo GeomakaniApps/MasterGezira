@@ -30,11 +30,6 @@ namespace MasterGezira
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
 
             });
-            //builder.Services.AddDbContext<MasterDBContext>(options =>
-            //{
-            //    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
-            //           .ConfigureWarnings(warnings => warnings.Ignore(RelationalEventId.PendingModelChangesWarning));
-            //});
             #endregion
             // Add services to the container.
             #region ActionFilters
@@ -154,24 +149,4 @@ namespace MasterGezira
             app.Run();
         }
     }
-    public class AddFileUploadFilter : IOperationFilter
-    {
-        public void Apply(OpenApiOperation operation, OperationFilterContext context)
-        {
-            if (operation.RequestBody != null)
-            {
-                foreach (var content in operation.RequestBody.Content)
-                {
-                    if (content.Key.Equals("multipart/form-data", StringComparison.OrdinalIgnoreCase))
-                    {
-                        content.Value.Schema.Properties.Add("File", new OpenApiSchema
-                        {
-                            Type = "string",
-                            Format = "binary"
-                        });
-                    }
-                }
-            }
-        }
-    }
-    }
+}

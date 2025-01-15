@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Services
 {
-    public class TransactionTypeService(IRepository<TransactionType> _transactionTypeRepository,IMapper _mapper) : ITransactionTypeService
+    public class TransactionTypeService(IRepository<TransactionType> _transactionTypeRepository,IMapper _mapper , IChangeLogService _changeLogService , IHistoryLogService _historyLogService) : ITransactionTypeService
     {
         public async Task<TransactionTypeResult> CreateAsync(TransactionTypeDto transactionTypeDto)
         {
@@ -21,6 +21,7 @@ namespace Domain.Services
             if (_transactionTypeRepository.Find(n => n.Name.ToLower() == transactionTypeDto.Name.ToLower()) != null)
                 return Helper.Helper.CreateErrorResult<TransactionTypeResult>(HttpStatusCode.BadRequest, ErrorEnum.Existed("Transaction type"));
             TransactionType transactionType = _mapper.Map<TransactionType>(transactionTypeDto);
+            _changeLogService.SetCreateChangeLogInfo(transactionType);
             await _transactionTypeRepository.AddAsync(transactionType);
             result.TransactionType = transactionTypeDto;
             result.SuccessMessage = MessageEnum.Created(typeof(TransactionType).Name);
@@ -37,6 +38,7 @@ namespace Domain.Services
             if (transactionType.IsDeleted == true)
                 return Helper.Helper.CreateErrorResult<TransactionTypeResult>(HttpStatusCode.BadRequest, "Transaction type already Deleted");
             transactionType.IsDeleted = true;
+            _changeLogService.SetDeleteChangeLogInfo(transactionType);
             await _transactionTypeRepository.UpdateAsync(transactionType);
             result.SuccessMessage = MessageEnum.Deleted(typeof(TransactionType).Name);
             result.StatusCode = HttpStatusCode.OK;
@@ -73,10 +75,14 @@ namespace Domain.Services
         {
             var result = new TransactionTypeResult();
             var transactionType = await _transactionTypeRepository.GetByIdAsync(id);
+            var oldTransactionType = new TransactionType();
+            _mapper.Map(transactionType , oldTransactionType);
             if (transactionType == null)
                 return Helper.Helper.CreateErrorResult<TransactionTypeResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("Transaction type"));
             _mapper.Map(transactionTypeDto, transactionType);
+            _changeLogService.SetUpdateChangeLogInfo(transactionType);
             await _transactionTypeRepository.UpdateAsync(transactionType);
+            await _historyLogService.CompareAndLogTransactionTypeChanges(transactionType, oldTransactionType, (int)transactionType.UpdateBy);
             result.TransactionType = transactionTypeDto;
             result.SuccessMessage = MessageEnum.Updated(typeof(TransactionType).Name);
             result.StatusCode = HttpStatusCode.OK;

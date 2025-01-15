@@ -27,6 +27,7 @@ public class MasterDBContext : IdentityDbContext<ApplicationUser, ApplicationRol
     public DbSet<MembersRef> MembersRefs { get; set; }
     public DbSet<LateFees> LateFees { get; set; }
     public DbSet<TransactionType> TransactionTypes { get; set; }
+    public DbSet<HistoryLog> HistoryLogs { get; set; }
     public DbSet<ArchiveMembersRef> ArchiveMembersRefs { get; set; }
     public DbSet<ArchiveMember> ArchiveMembers { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)

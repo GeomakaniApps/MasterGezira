@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Services
 {
-    public class ReferenceService(IRepository<Reference> _ReferenceRepository , IMapper _mapper) : IReferenceService
+    public class ReferenceService(IRepository<Reference> _ReferenceRepository , IMapper _mapper , IChangeLogService _changeLogService , IHistoryLogService _historyLogService) : IReferenceService
     {
         public async Task<ReferenceResult> CreateAsync(ReferenceDto referenceDto)
         {
@@ -22,6 +22,7 @@ namespace Domain.Services
                 return Helper.Helper.CreateErrorResult<ReferenceResult>(HttpStatusCode.BadRequest, ErrorEnum.Existed("Reference"));
      
             Reference Reference = _mapper.Map<Reference>(referenceDto);
+            _changeLogService.SetCreateChangeLogInfo(Reference);
             await _ReferenceRepository.AddAsync(Reference);
             result.Reference = referenceDto;
             result.SuccessMessage = MessageEnum.Created(typeof(Reference).Name);
@@ -35,7 +36,12 @@ namespace Domain.Services
             var Reference = await _ReferenceRepository.GetByIdAsync(id);
             if (Reference == null)
                 return Helper.Helper.CreateErrorResult<ReferenceResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("Reference"));
-            await _ReferenceRepository.DeleteAsync(Reference);
+            if (Reference.IsDeleted == true)
+                return Helper.Helper.CreateErrorResult<ReferenceResult>(HttpStatusCode.BadRequest, "Reference Already Deleted");
+
+            Reference.IsDeleted = true;
+            _changeLogService.SetDeleteChangeLogInfo(Reference);
+            await _ReferenceRepository.UpdateAsync(Reference);
             result.SuccessMessage = MessageEnum.Deleted(typeof(Reference).Name);
             result.StatusCode = HttpStatusCode.OK;
             return result;
@@ -71,14 +77,18 @@ namespace Domain.Services
         {
             var result = new ReferenceResult();
             var Reference = await _ReferenceRepository.GetByIdAsync(id);
+            var OldReference = new Reference();
+            _mapper.Map(Reference, OldReference);
             if (Reference == null)
                 return Helper.Helper.CreateErrorResult<ReferenceResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("Reference"));
             var isDuplacateName = await _ReferenceRepository.FindAsync(n => n.Name.ToLower() == referenceDto.Name.ToLower() && n.Id != id);
             if (isDuplacateName != null)
                 return Helper.Helper.CreateErrorResult<ReferenceResult>(HttpStatusCode.Conflict, ErrorEnum.Existed("Reference"));
        
-            _mapper.Map(referenceDto, Reference);          
+            _mapper.Map(referenceDto, Reference);
+            _changeLogService.SetUpdateChangeLogInfo(Reference);
             await _ReferenceRepository.UpdateAsync(Reference);
+             await _historyLogService.CompareAndLogReferenceChanges(Reference, OldReference, (int)Reference.UpdateBy);
             result.Reference = referenceDto;
             result.SuccessMessage = MessageEnum.Updated(typeof(Reference).Name);
             result.StatusCode = HttpStatusCode.OK;

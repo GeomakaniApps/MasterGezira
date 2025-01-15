@@ -89,7 +89,9 @@ public class MemberRefService(IRepository<MembersRef> _memberRefRepository
         archiveMembersRef.Archived = true;
         _changeLogService.SetDeleteChangeLogInfo(archiveMembersRef);
         await _archiveMembersRefRepository.AddAsync(archiveMembersRef);
-        await _memberRefRepository.DeleteAsync(memberRef);
+        memberRef.IsDeleted = true;
+        _changeLogService.SetDeleteChangeLogInfo(memberRef);
+        await _memberRefRepository.UpdateAsync(memberRef);
         result.SuccessMessage = MessageEnum.Deleted(typeof(MembersRef).Name);
         result.StatusCode = HttpStatusCode.OK;
         return result;
@@ -137,12 +139,15 @@ public class MemberRefService(IRepository<MembersRef> _memberRefRepository
     {
         var result = new MemberRefResult();
         var memberRef = await _memberRefRepository.GetByIdAsync(id);
+        var oldMemberRef = new MembersRef();    
+        _mapper.Map(memberRef ,oldMemberRef);
         if (memberRef == null)
             return Helper.Helper.CreateErrorResult<MemberRefResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("MemberRef"));
 
         _mapper.Map(memberRefDto, memberRef);
+        _changeLogService.SetUpdateChangeLogInfo(memberRef);
         await _memberRefRepository.UpdateAsync(memberRef);
-
+        await _historyLogService.CompareAndLogMemberRefChanges(memberRef, oldMemberRef, (int)memberRef.UpdateBy);
         result.MemberRef = memberRefDto;
         result.SuccessMessage = MessageEnum.Updated(typeof(MembersRef).Name);
         result.StatusCode = HttpStatusCode.OK;

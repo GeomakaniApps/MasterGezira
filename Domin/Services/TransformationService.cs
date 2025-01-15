@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Services
 {
-    public class TransformationService(IRepository<Transformation> _transformationRepository,IMapper _mapper) : ITransformationService
+    public class TransformationService(IRepository<Transformation> _transformationRepository,IMapper _mapper ,IChangeLogService _changeLogService , IHistoryLogService _historyLogService) : ITransformationService
     {
         public async Task<TransformationResult> CreateAsync(TransformationDto transformationDto)
         {
@@ -21,6 +21,7 @@ namespace Domain.Services
             if (_transformationRepository.Find(n=>n.Name.ToLower()==transformationDto.Name.ToLower())!=null)
                 return Helper.Helper.CreateErrorResult<TransformationResult>(HttpStatusCode.BadRequest,ErrorEnum.Existed("transformation"));
             var transformation=_mapper.Map<Transformation>(transformationDto);
+            _changeLogService.SetCreateChangeLogInfo(transformation);
             await _transformationRepository.AddAsync(transformation);
             result.Transformation=transformationDto;
             result.SuccessMessage = MessageEnum.Created(typeof(Transformation).Name);
@@ -34,7 +35,12 @@ namespace Domain.Services
             var transformation = await _transformationRepository.GetByIdAsync(id);
             if (transformation == null)
                 return Helper.Helper.CreateErrorResult<TransformationResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("transformation"));
-           await _transformationRepository.DeleteAsync(transformation);
+            if (transformation.IsDeleted == true)
+                return Helper.Helper.CreateErrorResult<TransformationResult>(HttpStatusCode.BadRequest, "Transformation Already Deleted");
+
+            transformation.IsDeleted = true;
+            _changeLogService.SetDeleteChangeLogInfo(transformation);
+            await _transformationRepository.UpdateAsync(transformation);
            result.SuccessMessage = MessageEnum.Deleted(typeof(Transformation).Name);
            return result;
         }
@@ -67,13 +73,17 @@ namespace Domain.Services
         {
             var result = new TransformationResult();
             var transformation = await _transformationRepository.GetByIdAsync(id);
+            var oldTransformation = new Transformation();
+            _mapper.Map(transformation, oldTransformation);
             if (transformation == null)
                 return Helper.Helper.CreateErrorResult<TransformationResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("transformation"));
             var isDuplicateName = _transformationRepository.Find(t => t.Name.ToLower() == transformationDto.Name.ToLower() && t.Id != id);
             if (isDuplicateName!=null)
                 return Helper.Helper.CreateErrorResult<TransformationResult>(HttpStatusCode.Conflict,ErrorEnum.Existed("transformation"));
             _mapper.Map(transformationDto, transformation);
+            _changeLogService.SetUpdateChangeLogInfo(transformation);
             await _transformationRepository.UpdateAsync(transformation);
+            await _historyLogService.CompareAndLogTransformationChanges(transformation, oldTransformation, (int)transformation.UpdateBy);
             result.Transformation = transformationDto;
             result.SuccessMessage=MessageEnum.Updated(typeof(Transformation).Name);
             return result;

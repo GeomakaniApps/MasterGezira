@@ -226,12 +226,12 @@ namespace Domain.Services
             await _memberReposatory.UpdateAsync(member);
             if (memberDto.Image != null)
             {
-                if (member.MembersProfilePicturesId.HasValue)
-                {
-                    await _ImageService.DeleteAsync(member.MembersProfilePicturesId.Value);
-                }
+                //if (member.MembersProfilePicturesId.HasValue)
+                //{
+                //    await _ImageService.DeleteAsync(member.MembersProfilePicturesId.Value);
+                //}
 
-                var imageResult = await _ImageService.CreateAsync(new MembersProfilePicturesDto
+                var imageResult = await _ImageService.UpdateAsync((int)member.MembersProfilePicturesId ,new MembersProfilePicturesDto
                 {
                     Image = memberDto.Image,
                     memberId = member.Id,
@@ -253,6 +253,7 @@ namespace Domain.Services
 
             }
 
+            await _historyLogService.CompareAndLogMemberChanges(member, oldMember,  actionOwner: (int)member.UpdateBy);
 
             result.Member = memberDto;
             result.SuccessMessage = MessageEnum.Updated(typeof(Member).Name);

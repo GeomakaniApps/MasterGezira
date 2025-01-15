@@ -16,7 +16,7 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace Domain.Services
 {
-    public class MembersProfilePicturesService(IRepository<MembersProfilePictures> _ImageReposatory ,IMapper _mapper , IChangeLogService _changeLogService) : IMembersProfilePicturesService
+    public class MembersProfilePicturesService(IRepository<MembersProfilePictures> _ImageReposatory ,IMapper _mapper , IChangeLogService _changeLogService,IHistoryLogService _historyLogService) : IMembersProfilePicturesService
     {
         public async Task<ImageResult> CreateAsync(MembersProfilePicturesDto imageDto)
         {
@@ -30,12 +30,12 @@ namespace Domain.Services
 
                     var Images = new MembersProfilePictures
                     {
-                        Name = imageDto.Image.FileName,
+                        Name = Path.GetFileNameWithoutExtension(imageDto.Image.FileName),
                         ImageExtension = Path.GetExtension(imageDto.Image.FileName),
                         Image = stream.ToArray(),
                         //UploadedAt = DateTime.UtcNow,
-                        memberId = imageDto.memberId,
-                        memberRefId = imageDto.memberRefId
+                        MemberId = imageDto.memberId,
+                        MemberRefId = imageDto.memberRefId
                     };
                     _changeLogService.SetCreateChangeLogInfo(Images);
                     await _ImageReposatory.AddAsync(Images);
@@ -87,6 +87,9 @@ namespace Domain.Services
             if (imeges == null)
                 return Helper.Helper.CreateErrorResult<ImageResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("Image"));
             imeges.IsDeleted = true;
+            var oldImage = new MembersProfilePictures();
+            _mapper.Map(imeges , oldImage);
+            await _ImageReposatory.UpdateAsync(imeges);
             if (imageDto.Image != null && imageDto.Image.Length > 0)
             {
 
@@ -94,17 +97,17 @@ namespace Domain.Services
                 {
                     await imageDto.Image.CopyToAsync(stream);
 
-                    var Images = new MembersProfilePictures
+                    var images = new MembersProfilePictures
                     {
-                        Name = imageDto.Image.Name,
+                        Name = Path.GetFileNameWithoutExtension(imageDto.Image.FileName),
                         ImageExtension = Path.GetExtension(imageDto.Image.FileName),
                         Image = stream.ToArray(),
-                      //  UploadedAt = DateTime.UtcNow,
-
+                        MemberId = imageDto.memberId
                     };
-                    _changeLogService.SetCreateChangeLogInfo(Images);
-                    await _ImageReposatory.UpdateAsync(Images);
-                    imageDto.Base64Image = Convert.ToBase64String(Images.Image);
+                    _changeLogService.SetCreateChangeLogInfo(images);
+                    await _ImageReposatory.UpdateAsync(images);
+                    imageDto.Base64Image = Convert.ToBase64String(images.Image);
+                    await _historyLogService.CompareAndLogImageChanges(images, oldImage, (int)imeges.CreateBy);
                 }
             }
             result.Image = imageDto;

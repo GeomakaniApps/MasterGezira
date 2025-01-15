@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Services
 {
-    public class SectionService(IRepository<Section> _SectionRepository, IMapper _mapper,IRepository<MemberType> _memberTypeRepository, IRepository<Reference> _referenceRepository) : ISectionService
+    public class SectionService(IRepository<Section> _SectionRepository, IMapper _mapper,IRepository<MemberType> _memberTypeRepository, IRepository<Reference> _referenceRepository , IChangeLogService _changeLogService , IHistoryLogService _historyLogService) : ISectionService
     {
         public async Task<SectionResult> CreateAsync(SectionDto SectionDto)
         {
@@ -28,6 +28,7 @@ namespace Domain.Services
             if (reference == null)
                 return Helper.Helper.CreateErrorResult<SectionResult>(HttpStatusCode.BadRequest, "Didn't find the reference you passed it");
             Section section = _mapper.Map<Section>(SectionDto);
+            _changeLogService.SetCreateChangeLogInfo(section);
             await _SectionRepository.AddAsync(section);
             result.Section = SectionDto;
             result.SuccessMessage = MessageEnum.Created(typeof(Section).Name);
@@ -44,6 +45,7 @@ namespace Domain.Services
             if (Section.IsDeleted == true)
                 return Helper.Helper.CreateErrorResult<SectionResult>(HttpStatusCode.BadRequest, "Section already Deleted");
             Section.IsDeleted = true;
+            _changeLogService.SetDeleteChangeLogInfo(Section);
             await _SectionRepository.UpdateAsync(Section);
             result.SuccessMessage = MessageEnum.Deleted(typeof(Section).Name);
             result.StatusCode = HttpStatusCode.OK;
@@ -92,8 +94,8 @@ namespace Domain.Services
         public async Task<SectionResult> UpdateAsync(int id, SectionDto SectionDto)
         {
             var result = new SectionResult();
-            var section = await _SectionRepository.GetByIdAsync(id);
-            if (section == null)
+            var oldsection = await _SectionRepository.GetByIdAsync(id);
+            if (oldsection == null)
                 return Helper.Helper.CreateErrorResult<SectionResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("Section"));
             var isDuplacateName = await _SectionRepository.FindAsync(n => n.Name.ToLower() == SectionDto.Name.ToLower() && n.Id != id);
             if (isDuplacateName != null)
@@ -104,8 +106,13 @@ namespace Domain.Services
             var reference = await _referenceRepository.GetByIdAsync(SectionDto.ReferenceId);
             if (reference == null)
                 return Helper.Helper.CreateErrorResult<SectionResult>(HttpStatusCode.BadRequest, "Didn't find the reference you passed it");
-            _mapper.Map(SectionDto, section);
-            await _SectionRepository.UpdateAsync(section);
+            oldsection.IsDeleted = true;
+            _changeLogService.SetDeleteChangeLogInfo(oldsection);
+            await _SectionRepository.UpdateAsync(oldsection);
+            Section section = _mapper.Map<Section>(SectionDto);
+            _changeLogService.SetCreateChangeLogInfo(section);
+            await _SectionRepository.AddAsync(section);
+            await _historyLogService.CompareAndLogSectionChanges(section, oldsection, (int)section.CreateBy);
             result.Section = SectionDto;
             result.SuccessMessage = MessageEnum.Updated(typeof(Section).Name);
             result.StatusCode = HttpStatusCode.OK;

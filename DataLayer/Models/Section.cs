@@ -29,6 +29,12 @@ namespace DataLayer.Models
 
         public int ReferenceId { get; set; }
         public Reference? Reference { get; set; }
-
+        public int? CreateBy { get; set; }
+        public DateTime? CreateAt { get; set; }
+        //public int? UpdateBy { get; set; }
+        //public DateTime? UpdateAt { get; set; }
+        public int? DeleteBy { get; set; }
+        public DateTime? DeleteAt { get; set; }
+       
     }
 }

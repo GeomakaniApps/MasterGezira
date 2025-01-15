@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Services
 {
-    public class CityService(IRepository<City> _cityReposatory, IMapper _mapper) : ICityService
+    public class CityService(IRepository<City> _cityReposatory, IMapper _mapper , IChangeLogService _changeLogService , IHistoryLogService _historyLogService) : ICityService
     {
         public async Task<CityResult> CreateAsync(CityDto cityDto)
         {
@@ -22,6 +22,7 @@ namespace Domain.Services
             if (NameCity != null)
                 return Helper.Helper.CreateErrorResult<CityResult>(HttpStatusCode.BadRequest, ErrorEnum.Existed("City"));
             City city = _mapper.Map<City>(cityDto);
+            _changeLogService.SetCreateChangeLogInfo(city);
             await _cityReposatory.AddAsync(city);
             result.City = cityDto;
             result.SuccessMessage = MessageEnum.Created(typeof(City).Name);
@@ -36,7 +37,12 @@ namespace Domain.Services
             var city = await _cityReposatory.GetByIdAsync(id);
             if (city == null)
                 return Helper.Helper.CreateErrorResult<CityResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("City"));
-            await _cityReposatory.DeleteAsync(city);
+            if (city.IsDeleted == true)
+                return Helper.Helper.CreateErrorResult<CityResult>(HttpStatusCode.BadRequest, "City Already Deleted");
+
+            city.IsDeleted = true;
+            _changeLogService.SetDeleteChangeLogInfo(city);
+            await _cityReposatory.UpdateAsync(city);
             result.SuccessMessage = MessageEnum.Deleted(typeof(City).Name);
             result.StatusCode = HttpStatusCode.OK;
             return result;
@@ -72,10 +78,14 @@ namespace Domain.Services
         {
             var result = new CityResult();
             var city = await _cityReposatory.GetByIdAsync(id);
+            var oldCity = new City();
+            _mapper.Map(city, oldCity);
             if (city == null)
                 return Helper.Helper.CreateErrorResult<CityResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("City"));
             _mapper.Map(cityDto, city);
+            _changeLogService.SetUpdateChangeLogInfo(city);
             await _cityReposatory.UpdateAsync(city);
+             await _historyLogService.CompareAndLogCiryChanges(city, oldCity, (int)city.UpdateBy);
             result.City = cityDto;
             result.SuccessMessage = MessageEnum.Updated(typeof(City).Name);
             result.StatusCode = HttpStatusCode.OK;

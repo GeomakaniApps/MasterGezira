@@ -18,7 +18,8 @@ public class MemberRefService(IRepository<MembersRef> _memberRefRepository
     , IRepository<Member> _memberRepository, IRepository<Reference> _referenceRepository
     , IRepository<Section> _sectionRepository, IMembersProfilePicturesService _imageService
     , IMapper _mapper, IChangeLogService _changeLogService
-    ,IRepository<ArchiveMembersRef> _archiveMembersRefRepository) : IMemberRefService
+    ,IRepository<ArchiveMembersRef> _archiveMembersRefRepository
+    , IHistoryLogService _historyLogService) : IMemberRefService
 {
 
 
@@ -89,9 +90,9 @@ public class MemberRefService(IRepository<MembersRef> _memberRefRepository
         archiveMembersRef.Archived = true;
         _changeLogService.SetDeleteChangeLogInfo(archiveMembersRef);
         await _archiveMembersRefRepository.AddAsync(archiveMembersRef);
-        memberRef.IsDeleted = true;
-        _changeLogService.SetDeleteChangeLogInfo(memberRef);
-        await _memberRefRepository.UpdateAsync(memberRef);
+     //   memberRef.IsDeleted = true;
+        _changeLogService.SetUnArchivedChangeLogInfo(memberRef);
+        await _memberRefRepository.DeleteAsync(memberRef);
         result.SuccessMessage = MessageEnum.Deleted(typeof(MembersRef).Name);
         result.StatusCode = HttpStatusCode.OK;
         return result;

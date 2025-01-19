@@ -23,7 +23,8 @@ namespace Domain.Services
         ,IMembersProfilePicturesService _ImageService
         , IMapper _mapper, IChangeLogService _changeLogService
         , IMembersAttachmentService _attachmentService
-        ,IRepository<ArchiveMember> _archiveMemberReposatory
+        , IHistoryLogService _historyLogService
+        , IRepository<ArchiveMember> _archiveMemberReposatory
         , IRepository<MembersRef> _membersRefReposatory
         ,IMemberRefService _memberRefService
         ,IRepository<ArchiveMember> _archiveMemberRepository) : IMemberService
@@ -214,7 +215,8 @@ namespace Domain.Services
             var member = await _memberReposatory.GetByIdAsync(id , includeProperties:prop);
             if (member == null)
                 return Helper.Helper.CreateErrorResult<MemberResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("Member"));
-
+            var oldMember = new Member();
+            _mapper.Map(member, oldMember);
             var existingMember = _memberReposatory.Find(n => n.Name.ToLower() == memberDto.Name.ToLower() && n.Id != id);
             if (existingMember != null)
                 return Helper.Helper.CreateErrorResult<MemberResult>(HttpStatusCode.BadRequest, ErrorEnum.Existed("Member"));

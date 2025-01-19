@@ -3,6 +3,7 @@ using System;
 using DataLayer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataLayer.Migrations
 {
     [DbContext(typeof(MasterDBContext))]
-    partial class MasterDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250101123456_RemoveRelationBetweenArchiveMemberRefAndMember")]
+    partial class RemoveRelationBetweenArchiveMemberRefAndMember
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -344,30 +347,9 @@ namespace DataLayer.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("CreateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("CreateBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("DeleteAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("DeleteBy")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<DateTime?>("UpdateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("UpdateBy")
-                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -382,70 +364,13 @@ namespace DataLayer.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("CreateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("CreateBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("DeleteAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("DeleteBy")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("UpdateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("UpdateBy")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
 
                     b.ToTable("Cities");
-                });
-
-            modelBuilder.Entity("DataLayer.Models.HistoryLog", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("ActionDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("ActionOwner")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("ColumnName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("NewValue")
-                        .HasColumnType("text");
-
-                    b.Property<string>("OldValue")
-                        .HasColumnType("text");
-
-                    b.Property<int>("RowId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("TableName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("HistoryLogs");
                 });
 
             modelBuilder.Entity("DataLayer.Models.Job", b =>
@@ -456,30 +381,9 @@ namespace DataLayer.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("CreateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("CreateBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("DeleteAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("DeleteBy")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<DateTime?>("UpdateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("UpdateBy")
-                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -494,18 +398,6 @@ namespace DataLayer.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("CreateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("CreateBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("DeleteAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("DeleteBy")
-                        .HasColumnType("integer");
-
                     b.Property<DateOnly>("FineDate")
                         .HasColumnType("date");
 
@@ -514,12 +406,6 @@ namespace DataLayer.Migrations
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
-
-                    b.Property<DateTime?>("UpdateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("UpdateBy")
-                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -661,30 +547,12 @@ namespace DataLayer.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
 
-                    b.Property<DateTime?>("CreateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("CreateBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("DeleteAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("DeleteBy")
-                        .HasColumnType("integer");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<DateTime?>("UpdateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("UpdateBy")
-                        .HasColumnType("integer");
 
                     b.HasKey("id");
 
@@ -758,12 +626,6 @@ namespace DataLayer.Migrations
                     b.Property<int?>("CreateBy")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime?>("DeleteAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("DeleteBy")
-                        .HasColumnType("integer");
-
                     b.Property<byte[]>("Image")
                         .HasColumnType("bytea");
 
@@ -776,6 +638,12 @@ namespace DataLayer.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int?>("memberId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("memberRefId")
+                        .HasColumnType("integer");
 
                     b.HasKey("id");
 
@@ -790,30 +658,9 @@ namespace DataLayer.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("CreateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("CreateBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("DeleteAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("DeleteBy")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<DateTime?>("UpdateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("UpdateBy")
-                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -828,30 +675,9 @@ namespace DataLayer.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
 
-                    b.Property<DateTime?>("CreateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("CreateBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("DeleteAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("DeleteBy")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<DateTime?>("UpdateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("UpdateBy")
-                        .HasColumnType("integer");
 
                     b.HasKey("id");
 
@@ -866,30 +692,9 @@ namespace DataLayer.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("CreateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("CreateBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("DeleteAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("DeleteBy")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<DateTime?>("UpdateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("UpdateBy")
-                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -906,18 +711,6 @@ namespace DataLayer.Migrations
 
                     b.Property<bool?>("Child")
                         .HasColumnType("boolean");
-
-                    b.Property<DateTime?>("CreateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("CreateBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("DeleteAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("DeleteBy")
-                        .HasColumnType("integer");
 
                     b.Property<double>("FirstTimeSubscriptionPrice")
                         .HasColumnType("double precision");
@@ -976,30 +769,12 @@ namespace DataLayer.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("CreateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("CreateBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("DeleteAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("DeleteBy")
-                        .HasColumnType("integer");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<DateTime?>("UpdateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("UpdateBy")
-                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -1014,30 +789,9 @@ namespace DataLayer.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("CreateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("CreateBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("DeleteAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("DeleteBy")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<DateTime?>("UpdateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("UpdateBy")
-                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -1106,7 +860,8 @@ namespace DataLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ImageId");
+                    b.HasIndex("ImageId")
+                        .IsUnique();
 
                     b.HasIndex("MemberCode");
 
@@ -1319,7 +1074,7 @@ namespace DataLayer.Migrations
                         .HasForeignKey("MemberTypeId");
 
                     b.HasOne("DataLayer.Models.MembersProfilePictures", "MembersPictures")
-                        .WithMany()
+                        .WithMany("Members")
                         .HasForeignKey("MembersProfilePicturesId");
 
                     b.HasOne("DataLayer.Models.Nationality", "Nationality")
@@ -1392,8 +1147,8 @@ namespace DataLayer.Migrations
             modelBuilder.Entity("MembersRef", b =>
                 {
                     b.HasOne("DataLayer.Models.MembersProfilePictures", "Image")
-                        .WithMany()
-                        .HasForeignKey("ImageId");
+                        .WithOne("MembersRefs")
+                        .HasForeignKey("MembersRef", "ImageId");
 
                     b.HasOne("DataLayer.Models.Member", "Member")
                         .WithMany()
@@ -1480,6 +1235,13 @@ namespace DataLayer.Migrations
             modelBuilder.Entity("DataLayer.Models.Member", b =>
                 {
                     b.Navigation("AttachmentMembers");
+                });
+
+            modelBuilder.Entity("DataLayer.Models.MembersProfilePictures", b =>
+                {
+                    b.Navigation("Members");
+
+                    b.Navigation("MembersRefs");
                 });
 #pragma warning restore 612, 618
         }

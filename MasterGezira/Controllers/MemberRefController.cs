@@ -2,6 +2,7 @@
 using Domain.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace MasterGezira.API.Controllers
 {
@@ -67,9 +68,20 @@ namespace MasterGezira.API.Controllers
         [HttpDelete]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<ActionResult> Delete(int id,[Required]string deletionReason)
         {
-            var result = await _memberRefService.DeleteAsync(id);
+            var result = await _memberRefService.DeleteAsync(id,deletionReason);
+            if (!result.Success)
+                return StatusCode((int)result.StatusCode, result.ErrorMessage);
+
+            return StatusCode((int)result.StatusCode, result);
+        }
+        [HttpPut]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult> UnArchive(int id)
+        {
+            var result = await _memberRefService.UnArchiveAsync(id);
             if (!result.Success)
                 return StatusCode((int)result.StatusCode, result.ErrorMessage);
 

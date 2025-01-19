@@ -1,16 +1,15 @@
 ﻿using DataLayer.Helpers;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace DataLayer.Models
 {
-    public class Member : Entity
+    public class ArchiveMember:Entity
     {
         public int Id { get; set; }
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -36,14 +35,14 @@ namespace DataLayer.Models
         public int? QualificationId { get; set; }
         public int? TransformationId { get; set; }
         public string? BirthPlace { get; set; }
-      //  public string? UserId { get; set; }
+        //  public string? UserId { get; set; }
         public DateOnly? JoinDate { get; set; }
         public int? CreateBy { get; set; }
         public DateTime? CreateAt { get; set; }
         public int? UpdateBy { get; set; }
         public DateTime? UpdateAt { get; set; }
-        public int? UnArchivedBy { get; set; }
-        public DateTime? UnArchivedAt { get; set; }
+        public int? DeleteBy { get; set; }
+        public DateTime? DeleteAt { get; set; }
         public bool? IsActive { get; set; }
         [DefaultValue(false)]
         public bool Suspended { get; set; }
@@ -57,5 +56,7 @@ namespace DataLayer.Models
         public Transformation? Transformation { get; set; }
         public MembersProfilePictures? MembersPictures { get; set; }
         public ICollection<MembersAttachments> AttachmentMembers { get; set; } = new List<MembersAttachments>();
+        public string DeletionReason { get; set; }
+        public bool Archived { get; set; }
     }
 }

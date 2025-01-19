@@ -15,5 +15,6 @@ public interface IMemberRefService
     Task<GetMemberRefResult> GetAsync(int id);
     Task<MemberRefResult> CreateAsync(MemberRefDto memberRefDto);
     Task<MemberRefResult> UpdateAsync(int id, MemberRefDto memberRefDto);
-    Task<MemberRefResult> DeleteAsync(int id);
+    Task<MemberRefResult> DeleteAsync(int id,string deletionReason);
+    Task<MemberRefResult> UnArchiveAsync(int id);
 }

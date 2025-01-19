@@ -15,10 +15,19 @@ using static Domain.DTOs.GetMemberDto;
 using static Domain.DTOs.MembersProfilePicturesDto;
 using static Domain.DTOs.MemberDto;
 using DataLayer.Services.Pagination;
+using static Domain.DTOs.MemberRefDto;
 
 namespace Domain.Services
 {
-    public class MemberService(IRepository<Member> _memberReposatory,IMembersProfilePicturesService _ImageService, IMapper _mapper, IChangeLogService _changeLogService , IMembersAttachmentService _attachmentService ,IHistoryLogService _historyLogService) : IMemberService
+    public class MemberService(IRepository<Member> _memberReposatory
+        ,IMembersProfilePicturesService _ImageService
+        , IMapper _mapper, IChangeLogService _changeLogService
+        , IMembersAttachmentService _attachmentService
+        , IHistoryLogService _historyLogService
+        , IRepository<ArchiveMember> _archiveMemberReposatory
+        , IRepository<MembersRef> _membersRefReposatory
+        ,IMemberRefService _memberRefService
+        ,IRepository<ArchiveMember> _archiveMemberRepository) : IMemberService
     {
         public async Task<MemberResult> CreateAsync(MemberDto memberDto)
         {
@@ -64,7 +73,7 @@ namespace Domain.Services
             result.StatusCode = HttpStatusCode.Created;
             return result;
         }
-        public async Task<MemberResult> DeleteAsync(int id)
+        public async Task<MemberResult> DeleteAsync(int id, string deletionReason)
         {
             var result = new MemberResult();
             string prop = "AttachmentMembers";
@@ -72,8 +81,6 @@ namespace Domain.Services
             var member = await _memberReposatory.GetByIdAsync(id , includeProperties:prop);
             if (member == null)
                 return Helper.Helper.CreateErrorResult<MemberResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("Member"));
-            if (member.IsDeleted == true)
-                return Helper.Helper.CreateErrorResult<MemberResult>(HttpStatusCode.BadRequest, "Member already Deleted");
            
             if (member.MembersProfilePicturesId.HasValue)
             {
@@ -83,9 +90,22 @@ namespace Domain.Services
             {
                 await _attachmentService.DeleteAsync(id);
             }
-            _changeLogService.SetDeleteChangeLogInfo(member);
-            member.IsDeleted = true;
-            await _memberReposatory.UpdateAsync(member);
+            var memberRefs=await _membersRefReposatory.FindAllAsync(m => m.MemberCode == member.MemberCode);
+            if ( memberRefs.Any())
+            {
+                foreach(var memberRef in memberRefs)
+                {
+                    await _memberRefService.DeleteAsync(memberRef.Id, deletionReason);
+                }
+            }
+            ArchiveMember archiveMember = _mapper.Map<ArchiveMember>(member);
+            archiveMember.Id = 0; // Let the database generate a new Id
+            archiveMember.DeletionReason = deletionReason;
+            archiveMember.Archived = true;
+            _changeLogService.SetDeleteChangeLogInfo(archiveMember);
+            await _archiveMemberReposatory.AddAsync(archiveMember);
+            _changeLogService.SetUnArchivedChangeLogInfo(member);
+            await _memberReposatory.DeleteAsync(member);
             result.SuccessMessage = MessageEnum.Deleted(typeof(Member).Name);
             result.StatusCode = HttpStatusCode.OK;
             return result;
@@ -170,7 +190,7 @@ namespace Domain.Services
                         "Qualification",
                         "Transformation",
                         "MembersPictures",
-                        "AttachmentMembers"
+                        "AttachmentMembers",
                     };
 
             string includeProperties = string.Join(",", prop);
@@ -196,11 +216,8 @@ namespace Domain.Services
             var member = await _memberReposatory.GetByIdAsync(id , includeProperties:prop);
             if (member == null)
                 return Helper.Helper.CreateErrorResult<MemberResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("Member"));
-            //   var oldMember = await _memberReposatory.GetByIdAsync(id, includeProperties: prop);
             var oldMember = new Member();
             _mapper.Map(member, oldMember);
-            if (member.IsDeleted == true)
-                return Helper.Helper.CreateErrorResult<MemberResult>(HttpStatusCode.BadRequest, "Member already Deleted");
             var existingMember = _memberReposatory.Find(n => n.Name.ToLower() == memberDto.Name.ToLower() && n.Id != id);
             if (existingMember != null)
                 return Helper.Helper.CreateErrorResult<MemberResult>(HttpStatusCode.BadRequest, ErrorEnum.Existed("Member"));
@@ -298,10 +315,26 @@ namespace Domain.Services
             result.Count = membersPagedList.Count;
             return result;
         }
+        public async Task<MemberResult> UnArchiveAsync(int id)
+        {
+            var result = new MemberResult();
+            var archivedMember = await _archiveMemberRepository.GetByIdAsync(id);
+            if (archivedMember == null)
+                return Helper.Helper.CreateErrorResult<MemberResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("Member"));
+            if (archivedMember.Archived == false)
+                return Helper.Helper.CreateErrorResult<MemberResult>(HttpStatusCode.BadRequest, "This member is already not archived");
+            var member = _mapper.Map<Member>(archivedMember);
+            member.Id = 0; // Let the database generate a new Id
+            _changeLogService.SetUnArchivedChangeLogInfo(member);
+            await _memberReposatory.AddAsync(member);
+            archivedMember.Archived = false;
+            await _archiveMemberRepository.UpdateAsync(archivedMember);
+            result.SuccessMessage = "Member returned successfully";
+            return result;
+        }
 
 
-      
-   }
+    }
 
  }
 

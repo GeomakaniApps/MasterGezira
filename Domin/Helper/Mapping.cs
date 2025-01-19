@@ -111,6 +111,9 @@ namespace Domain.Helper
            .ForMember(dest => dest.JoinDate, opt => opt.Ignore());
 
 
+            CreateMap<MembersRef, ArchiveMembersRef>().ReverseMap();
+            CreateMap<Member, ArchiveMember>().ReverseMap();
+
         }
     }
 }

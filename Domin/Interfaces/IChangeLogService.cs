@@ -11,6 +11,7 @@ namespace Domain.Interfaces
         void SetCreateChangeLogInfo<T>(T entity) where T : class;
         void SetUpdateChangeLogInfo<T>(T entity) where T : class;
         void SetDeleteChangeLogInfo<T>(T entity) where T : class;
+        void SetUnArchivedChangeLogInfo<T>(T entity) where T : class;
         string GetUserId();
     }
 }

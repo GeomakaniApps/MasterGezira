@@ -34,8 +34,8 @@ namespace Domain.Services
                         ImageExtension = Path.GetExtension(imageDto.Image.FileName),
                         Image = stream.ToArray(),
                         //UploadedAt = DateTime.UtcNow,
-                        MemberId = imageDto.memberId,
-                        MemberRefId = imageDto.memberRefId
+                        //MemberId = imageDto.memberId,
+                        //MemberRefId = imageDto.memberRefId
                     };
                     _changeLogService.SetCreateChangeLogInfo(Images);
                     await _ImageReposatory.AddAsync(Images);
@@ -102,7 +102,7 @@ namespace Domain.Services
                         Name = Path.GetFileNameWithoutExtension(imageDto.Image.FileName),
                         ImageExtension = Path.GetExtension(imageDto.Image.FileName),
                         Image = stream.ToArray(),
-                        MemberId = imageDto.memberId
+                        //MemberId = imageDto.memberId
                     };
                     _changeLogService.SetCreateChangeLogInfo(images);
                     await _ImageReposatory.UpdateAsync(images);

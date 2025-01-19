@@ -10,7 +10,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using static Domain.DTOs.GetMemberRefDto;
 using static Domain.DTOs.MemberRefDto;
+using static Domain.DTOs.MembersProfilePicturesDto;
 
 namespace Domain.Services;
 
@@ -50,17 +52,32 @@ public class MemberRefService(IRepository<MembersRef> _memberRefRepository, IRep
 
         await _memberRefRepository.AddAsync(memberRef);
 
+        //if (memberRefDto.Image != null)
+        //{
+        //    var imageResult = await _imageService.CreateAsync(new MembersProfilePicturesDto
+        //    {
+        //        Image = memberRefDto.Image,
+        //        memberRefId = memberRef.Id,
+        //    });
+
+        //    if (imageResult.StatusCode == HttpStatusCode.Created)
+        //    {
+        //        memberRef.ImageId = imageResult.Image.Id;
+        //        await _memberRefRepository.UpdateAsync(memberRef);
+        //    }
+        //}
+
         if (memberRefDto.Image != null)
         {
             var imageResult = await _imageService.CreateAsync(new MembersProfilePicturesDto
             {
-                Image = memberRefDto.Image,
-                memberRefId = memberRef.Id,
+                Image = memberRefDto.Image
             });
 
-            if (imageResult.StatusCode == HttpStatusCode.Created)
+            if (imageResult.StatusCode == HttpStatusCode.Created && imageResult.Image != null)
             {
                 memberRef.ImageId = imageResult.Image.Id;
+                memberRefDto.Base64Image = imageResult.Image.Base64Image;
                 await _memberRefRepository.UpdateAsync(memberRef);
             }
         }
@@ -93,20 +110,75 @@ public class MemberRefService(IRepository<MembersRef> _memberRefRepository, IRep
 
 
 
-    public async Task<MemberRefResult> GetAsync(int id)
-    {
-        var result = new MemberRefResult();
-        var memberRef = await _memberRefRepository.GetByIdAsync(id);
-        if (memberRef == null)
-            return Helper.Helper.CreateErrorResult<MemberRefResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("MemberRef"));
+    
 
-        var memberRefDto = _mapper.Map<MemberRefDto>(memberRef);
-        result.MemberRef = memberRefDto;
+
+    //public async Task<MemberRefResult> GetAsync(int id)
+    //{
+    //    var result = new MemberRefResult();
+
+    //    var includeProperties = "Image";
+    //    var memberRef = await _memberRefRepository.GetByIdAsync(id, includeProperties: includeProperties);
+
+    //    if (memberRef == null)
+    //        return Helper.Helper.CreateErrorResult<MemberRefResult>(
+    //            HttpStatusCode.NotFound,
+    //            ErrorEnum.NotFoundMessage("MemberRef"));
+
+
+    //    var memberRefDto = _mapper.Map<MemberRefDto>(memberRef);
+
+
+    //    if (memberRef.Image != null && memberRef.Image.Image != null)
+    //    {
+    //        memberRefDto.Base64Image = Convert.ToBase64String(memberRef.Image.Image);
+    //    }
+
+    //    result.MemberRef = memberRefDto;
+    //    result.SuccessMessage = MessageEnum.Getted(typeof(MembersRef).Name);
+    //    result.StatusCode = HttpStatusCode.OK;
+
+    //    return result;
+    //}
+
+
+
+    public async Task<GetMemberRefResult> GetAsync(int id)
+    {
+        var result = new GetMemberRefResult();
+        List<string> prop = new List<string>
+    {
+        "Section",
+        "Member",
+        "Reference",
+        "Image"
+    };
+
+        string includeProperties = string.Join(",", prop);
+
+       
+        var memberRef = await _memberRefRepository.GetByIdAsync(id, includeProperties: includeProperties);
+
+        
+        if (memberRef == null)
+            return Helper.Helper.CreateErrorResult<GetMemberRefResult>(
+                HttpStatusCode.NotFound,
+                ErrorEnum.NotFoundMessage("MemberRef")
+            );
+
+       
+        var memberRefDto = _mapper.Map<GetMemberRefDto>(memberRef);
+
+       
+        
+        result.MemberRef = memberRefDto; 
         result.SuccessMessage = MessageEnum.Getted(typeof(MembersRef).Name);
         result.StatusCode = HttpStatusCode.OK;
 
         return result;
     }
+
+
 
     public async Task<MemberRefResult> UpdateAsync(int id, MemberRefDto memberRefDto)
     {
@@ -118,9 +190,28 @@ public class MemberRefService(IRepository<MembersRef> _memberRefRepository, IRep
             return Helper.Helper.CreateErrorResult<MemberRefResult>(HttpStatusCode.NotFound, ErrorEnum.NotFoundMessage("MemberRef"));
 
         _mapper.Map(memberRefDto, memberRef);
+
+        if (memberRefDto.Image != null)
+        {
+            var imageResult = await _imageService.CreateAsync(new MembersProfilePicturesDto
+            {
+                Image = memberRefDto.Image
+            });
+
+            if (imageResult.StatusCode == HttpStatusCode.Created && imageResult.Image != null)
+            {
+                memberRef.ImageId = imageResult.Image.Id;  
+                memberRefDto.Base64Image = imageResult.Image.Base64Image;  
+
+
+            }
+        }
+
+        await _memberRefRepository.UpdateAsync(memberRef);
+
         _changeLogService.SetUpdateChangeLogInfo(memberRef);
         await _memberRefRepository.UpdateAsync(memberRef);
-        await _historyLogService.CompareAndLogMemberRefChanges(memberRef, oldMemberRef, (int)memberRef.UpdateBy);
+        //await _historyLogService.CompareAndLogMemberRefChanges(memberRef, oldMemberRef, (int)memberRef.UpdateBy);
         result.MemberRef = memberRefDto;
         result.SuccessMessage = MessageEnum.Updated(typeof(MembersRef).Name);
         result.StatusCode = HttpStatusCode.OK;

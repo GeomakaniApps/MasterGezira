@@ -296,8 +296,8 @@ namespace Domain.Services
             var logDetailsList = new List<HistoryLog>();
 
             CompareAndLogProperty(logDetailsList, newImage, nameof(newImage.Name), newImage.Name, oldImage.Name);
-            CompareAndLogProperty(logDetailsList, newImage, nameof(newImage.MemberId), newImage.MemberId.ToString(), oldImage.MemberId.ToString());
-            CompareAndLogProperty(logDetailsList, newImage, nameof(newImage.MemberRefId), newImage.MemberRefId.ToString(), oldImage.MemberRefId.ToString());
+            //CompareAndLogProperty(logDetailsList, newImage, nameof(newImage.MemberId), newImage.MemberId.ToString(), oldImage.MemberId.ToString());
+            //CompareAndLogProperty(logDetailsList, newImage, nameof(newImage.MemberRefId), newImage.MemberRefId.ToString(), oldImage.MemberRefId.ToString());
 
             if (logDetailsList.Any())
             {

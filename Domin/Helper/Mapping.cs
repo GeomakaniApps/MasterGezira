@@ -16,6 +16,7 @@ namespace Domain.Helper
         public Mapping()
         {
             CreateMap<Area, AreaDto>().ReverseMap();
+            //CreateMap<MembersProfilePictures, MembersProfilePicturesDto>().ReverseMap();
             CreateMap<Area, GetAreaDto>().ReverseMap();
             CreateMap<Job, JobDto>().ReverseMap();
             CreateMap<Job, GetJobDto>().ReverseMap();
@@ -67,6 +68,10 @@ namespace Domain.Helper
 
             CreateMap<MembersRef, MemberRefDto>()
             .ForMember(dest => dest.Image, opt => opt.Ignore())
+             .ForMember(dest => dest.Base64Image,
+        opt => opt.MapFrom(src => src.Image != null && src.Image.Image != null
+            ? Convert.ToBase64String(src.Image.Image)
+            : null))
             .ForMember(dest => dest.JoinDate, opt => opt.Ignore());
             CreateMap<MemberRefDto, MembersRef>()
                 .ForMember(dest => dest.ImageId, opt => opt.Ignore())
@@ -87,7 +92,24 @@ namespace Domain.Helper
             CreateMap<Transformation, Transformation>();
             CreateMap<MembersProfilePictures, MembersProfilePictures>();
             CreateMap<MembersAttachments, MembersAttachments>();
-            CreateMap<HistoryLog, GetHistoryLog>().ReverseMap();    
+            CreateMap<HistoryLog, GetHistoryLog>().ReverseMap();
+
+
+            CreateMap<MemberRefDto, MembersRef>()
+            .ForMember(dest => dest.Image, opt => opt.Ignore())
+            .ForMember(dest => dest.ImageId, opt => opt.Ignore());
+            //.ForMember(dest => dest.Image, opt => opt.MapFrom(src => src.Image))
+
+            //.ForMember(dest => dest.JoinDate, opt => opt.MapFrom(src => src.JoinDate ?? DateOnly.FromDateTime(DateTime.UtcNow)));
+
+
+
+
+            CreateMap<MembersRef, GetMemberRefDto>()
+           .ForMember(dest => dest.Image, opt => opt.Ignore())
+            .ForMember(dest => dest.Image, opt => opt.MapFrom(src => src.Image != null ? Convert.ToBase64String(src.Image.Image) : null))
+           .ForMember(dest => dest.JoinDate, opt => opt.Ignore());
+
 
         }
     }

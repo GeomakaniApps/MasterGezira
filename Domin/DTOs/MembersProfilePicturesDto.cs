@@ -13,8 +13,8 @@ namespace Domain.DTOs
     {
         public int? Id { get; set; }
         public IFormFile? Image { get; set; }
-        public int? memberId { get; set; }
-        public int? memberRefId { get; set; }
+        //public int? memberId { get; set; }
+       public int? memberRefId { get; set; }
         public string? Base64Image { get; set; }
         public class ImageResult : OperationResult
         {

@@ -29,6 +29,7 @@ namespace Domain.Services
                 return Helper.Helper.CreateErrorResult<MemberResult>(HttpStatusCode.BadRequest, ErrorEnum.Existed("Member"));
             if (_memberReposatory.Find(n => n.NationalId == memberDto.NationalId) != null)
                 return Helper.Helper.CreateErrorResult<MemberResult>(HttpStatusCode.BadRequest, ErrorEnum.Existed("Member"));
+
             Member member = _mapper.Map<Member>(memberDto);
             member.JoinDate = DateOnly.FromDateTime(DateTime.UtcNow);
             _changeLogService.SetCreateChangeLogInfo(member);
@@ -38,7 +39,7 @@ namespace Domain.Services
                 var imageResult = await _ImageService.CreateAsync(new MembersProfilePicturesDto
                 {
                     Image = memberDto.Image,
-                    memberId = member.Id,
+                    //memberId = member.Id,
                 });
                 if (imageResult.StatusCode == HttpStatusCode.Created)
                 {
@@ -209,22 +210,40 @@ namespace Domain.Services
             _mapper.Map(memberDto, member);
             _changeLogService.SetUpdateChangeLogInfo(member);
             await _memberReposatory.UpdateAsync(member);
+            //if (memberDto.Image != null)
+            //{
+            //    //if (member.MembersProfilePicturesId.HasValue)
+            //    //{
+            //    //    await _ImageService.DeleteAsync(member.MembersProfilePicturesId.Value);
+            //    //}
+
+            //    var imageResult = await _ImageService.UpdateAsync((int)member.MembersProfilePicturesId ,new MembersProfilePicturesDto
+            //    {
+            //        Image = memberDto.Image,
+            //        //memberId = member.Id,
+            //    });
+            //    if (imageResult.StatusCode == HttpStatusCode.Created)
+            //    {
+            //        member.MembersProfilePicturesId = imageResult.Image.Id;
+            //        memberDto.Base64Image = imageResult.Image.Base64Image;
+            //        await _memberReposatory.UpdateAsync(member);
+            //    }
+            //}
+
             if (memberDto.Image != null)
             {
-                //if (member.MembersProfilePicturesId.HasValue)
-                //{
-                //    await _ImageService.DeleteAsync(member.MembersProfilePicturesId.Value);
-                //}
-
-                var imageResult = await _ImageService.UpdateAsync((int)member.MembersProfilePicturesId ,new MembersProfilePicturesDto
+                var imageResult = await _ImageService.CreateAsync(new MembersProfilePicturesDto
                 {
                     Image = memberDto.Image,
-                    memberId = member.Id,
                 });
-                if (imageResult.StatusCode == HttpStatusCode.Created)
+
+                if (imageResult.StatusCode == HttpStatusCode.Created && imageResult.Image != null)
                 {
+                    
                     member.MembersProfilePicturesId = imageResult.Image.Id;
-                    memberDto.Base64Image = imageResult.Image.Base64Image;
+                    memberDto.Base64Image = imageResult.Image.Base64Image; 
+
+                    
                     await _memberReposatory.UpdateAsync(member);
                 }
             }

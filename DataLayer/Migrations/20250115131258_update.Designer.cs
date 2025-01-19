@@ -3,6 +3,7 @@ using System;
 using DataLayer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataLayer.Migrations
 {
     [DbContext(typeof(MasterDBContext))]
-    partial class MasterDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250115131258_update")]
+    partial class update
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -559,6 +562,12 @@ namespace DataLayer.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
+                    b.Property<int?>("MemberId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("MemberRefId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -895,7 +904,8 @@ namespace DataLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ImageId");
+                    b.HasIndex("ImageId")
+                        .IsUnique();
 
                     b.HasIndex("MemberCode");
 
@@ -1028,7 +1038,7 @@ namespace DataLayer.Migrations
                         .HasForeignKey("MemberTypeId");
 
                     b.HasOne("DataLayer.Models.MembersProfilePictures", "MembersPictures")
-                        .WithMany()
+                        .WithMany("Members")
                         .HasForeignKey("MembersProfilePicturesId");
 
                     b.HasOne("DataLayer.Models.Nationality", "Nationality")
@@ -1097,8 +1107,8 @@ namespace DataLayer.Migrations
             modelBuilder.Entity("MembersRef", b =>
                 {
                     b.HasOne("DataLayer.Models.MembersProfilePictures", "Image")
-                        .WithMany()
-                        .HasForeignKey("ImageId");
+                        .WithOne("MembersRefs")
+                        .HasForeignKey("MembersRef", "ImageId");
 
                     b.HasOne("DataLayer.Models.Member", "Member")
                         .WithMany()
@@ -1180,6 +1190,13 @@ namespace DataLayer.Migrations
             modelBuilder.Entity("DataLayer.Models.Member", b =>
                 {
                     b.Navigation("AttachmentMembers");
+                });
+
+            modelBuilder.Entity("DataLayer.Models.MembersProfilePictures", b =>
+                {
+                    b.Navigation("Members");
+
+                    b.Navigation("MembersRefs");
                 });
 #pragma warning restore 612, 618
         }

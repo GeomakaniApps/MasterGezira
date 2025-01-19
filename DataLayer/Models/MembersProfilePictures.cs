@@ -12,8 +12,7 @@ namespace DataLayer.Models
     public class MembersProfilePictures : Entity
     {
         public int id { get; set; }
-        public int? MemberId { get; set; }
-        public int? MemberRefId { get; set; }
+       
         public string Name { get; set; }
         public string? ImageExtension { get; set; }
         public byte[]? Image { get; set; }
@@ -24,7 +23,7 @@ namespace DataLayer.Models
         public DateTime? DeleteAt { get; set; }
         [DefaultValue(false)]
         public bool IsDeleted { get; set; }
-        public ICollection<Member>? Members { get; set; }
-        public MembersRef? MembersRefs { get; set; }
+
+
     }
 }
